@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Livewire\CrudGenerator;
+use App\Http\Livewire\Dashboard;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,9 +17,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('login');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+Route::post('login', [AuthController::class, 'login'])->name('admin.login');
+Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
+    // Crud Generator Route
+    Route::get('/crud-generator', CrudGenerator::class)->name('crud.generator');
+
+    // App Route
+    Route::get('/dashboard', Dashboard::class)->name('dashboard');
+});

@@ -1,34 +1,24 @@
 <x-guest-layout>
-    <x-jet-authentication-card>
-        <x-slot name="logo">
-            <x-jet-authentication-card-logo />
-        </x-slot>
-
-        <div class="mb-4 text-sm text-gray-600">
-            {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-        </div>
-
+    <div class="container container-login container-transparent animated fadeIn">
         @if (session('status'))
-            <div class="mb-4 font-medium text-sm text-green-600">
-                {{ session('status') }}
-            </div>
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
         @endif
-
-        <x-jet-validation-errors class="mb-4" />
-
+        <h3 class="text-center">Lupa Kata Sandi</h3>
         <form method="POST" action="{{ route('password.email') }}">
             @csrf
-
-            <div class="block">
-                <x-jet-label for="email" value="{{ __('Email') }}" />
-                <x-jet-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <x-jet-button>
-                    {{ __('Email Password Reset Link') }}
-                </x-jet-button>
+            <div class="login-form">
+                <x-text-field type="email" name="email" label="Email" />
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Lupa kata
+                        sandi</button>
+                </div>
+                <div class="form-group login-account text-left mt-3">
+                    <span class="msg">Sudah memiliki akun ?</span>
+                    <a href="{{ route('login') }}" id="show-signup" class="link">Masuk</a>
+                </div>
             </div>
         </form>
-    </x-jet-authentication-card>
+    </div>
 </x-guest-layout>
