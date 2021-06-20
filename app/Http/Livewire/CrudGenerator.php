@@ -24,7 +24,7 @@ class CrudGenerator extends Component
         $columns = Schema::getAllTables();
         foreach ($columns as $key => $value) {
             $this->tables[] = [
-                'name' => $value->Tables_in_absenskuy
+                'name' => $value->Tables_in_gift_app
             ];
         }
     }
@@ -66,16 +66,28 @@ class CrudGenerator extends Component
         $controllerTemplate = $this->controllerTemplate();
         $viewTemplate = $this->viewTemplate($field_columns);
         $modelTemplate = $this->modelTemplate($field_columns);
-        file_put_contents(app_path("/Http/Livewire/Admin/{$controller_name}.php"), $controllerTemplate);
+
+        $folder_namespace = $this->folder_namespace;
+        $folder_namespace_lowertext = $this->folder_namespace;
+
+        if (!is_dir(app_path("/Http/Livewire/" . $this->folder_namespace))) {
+            mkdir(app_path("/Http/Livewire/" . $this->folder_namespace));
+        }
+
+        if (!is_dir(resource_path("/views/livewire/" . strtolower($this->folder_namespace)))) {
+            mkdir(resource_path("/views/livewire/" . strtolower($this->folder_namespace)));
+        }
+
+        file_put_contents(app_path("/Http/Livewire/$folder_namespace/{$controller_name}.php"), $controllerTemplate);
         if ($this->form_type == 'modal') {
-            file_put_contents(resource_path("/views/livewire/admin/{$view_name}.blade.php"), $viewTemplate);
+            file_put_contents(resource_path("/views/livewire/$folder_namespace_lowertext/{$view_name}.blade.php"), $viewTemplate);
         }
 
         if ($this->form_type == 'form') {
-            file_put_contents(resource_path("/views/livewire/admin/{$view_name}.blade.php"), $viewTemplate);
+            file_put_contents(resource_path("/views/livewire/$folder_namespace_lowertext/{$view_name}.blade.php"), $viewTemplate);
         }
 
-        // file_put_contents(app_path("/Models/{$this->filename}.php"), $modelTemplate);
+        file_put_contents(app_path("/Models/{$this->filename}.php"), $modelTemplate);
 
         $this->_reset();
         return $this->emit('showAlert', ['msg' => 'CRUD Berhasil Dibuat']);
@@ -99,6 +111,7 @@ class CrudGenerator extends Component
                 '[makeRules]',
                 '[getDataById]',
                 '[resetForm]',
+                '[folderNamespaceLower]',
             ],
             [
                 $this->filename,
@@ -115,6 +128,7 @@ class CrudGenerator extends Component
                 str_replace('<br>', '', implode(',' . PHP_EOL, $this->_makeRules())),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getDataById($this->table))),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_resetForm())),
+                strtolower($this->folder_namespace)
             ],
             $this->getStub('Controller')
         );
@@ -344,7 +358,6 @@ class CrudGenerator extends Component
         $this->form_type = null;
         $this->folder_namespace = 'Admin';
 
-        $this->tables = [];
         $this->columns = [];
         $this->field = [];
         $this->field_column = [];
