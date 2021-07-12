@@ -3,16 +3,18 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title">
+                    <h4 class="card-title text-capitalize">
                         <a href="{{route('dashboard')}}">
-                            <span><i class="fas fa-arrow-left mr-3"></i>[fileName]</span>
+                            <span><i class="fas fa-arrow-left mr-3 text-capitalize"></i>[fileName]</span>
                         </a>
                         <div class="pull-right">
+                        @if (auth()->user()->hasTeamPermission($curteam, request()->segment(1).':create'))
                         @if (!$form  && !$modal)
                         <button class="btn btn-danger btn-sm" wire:click="toggleForm(false)"><i class="fas fa-times"></i> Cancel</button>
                         @else
                         <button class="btn btn-primary btn-sm" wire:click="{{$modal ? 'showModal' : 'toggleForm(true)'}}"><i class="fas fa-plus"></i> Add
                             New</button>
+                        @endif
                         @endif
                         </div>
                     </h4>
@@ -26,18 +28,26 @@
                         <thead class="thead-light">
                             <tr>
                                 [itemLabel]
+                                @if (auth()->user()->hasTeamPermission($curteam, request()->segment(1).':update') || auth()->user()->hasTeamPermission($curteam, request()->segment(1).':delete'))
                                 <td>Action</td>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($items as $item)
                             <tr>
                                [itemValue]
+                               @if (auth()->user()->hasTeamPermission($curteam, request()->segment(1).':update') || auth()->user()->hasTeamPermission($curteam, request()->segment(1).':delete'))
                                 <td>
+                                @if (auth()->user()->hasTeamPermission($curteam, request()->segment(1).':update'))
                                     <button class="btn btn-success btn-sm" wire:click="getDataById('{{ $item->id }}')" id="btn-edit-{{ $item->id }}"><i class="fas fa-edit"></i></button>
+                                @endif
+                                @if (auth()->user()->hasTeamPermission($curteam, request()->segment(1).':delete'))
                                     <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
                                         data-target="#confirm-modal" wire:click="getId('{{ $item->id }}')" id="btn-delete-{{ $item->id }}"><i class="fas fa-trash"></i></button>
+                                @endif
                                 </td>
+                                @endif
                             </tr>
                             @endforeach
                         </tbody>
@@ -52,16 +62,19 @@
             <div class="modal-dialog" permission="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="my-modal-title">{{$update_mode ? 'Tambah' : 'Update'}} [fileName]</h5>
+                        <h5 class="modal-title text-capitalize" id="my-modal-title">{{$update_mode ? 'Tambah' : 'Update'}} [fileName]</h5>
                     </div>
                     <div class="modal-body">
                         [formInput]
                     </div>
                     <div class="modal-footer">
+                    
                         <button type="button" wire:click={{$update_mode ? 'update' : 'store'}} class="btn btn-primary btn-sm"><i
                                 class="fa fa-check pr-2"></i>Simpan</button>
+                   
                         <button class="btn btn-danger btn-sm" wire:click='_reset'><i
                                 class="fa fa-times pr-2"></i>Batal</a>
+                    
                     </div>
                 </div>
             </div>
