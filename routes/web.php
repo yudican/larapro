@@ -20,11 +20,21 @@ Route::get('/', function () {
     return redirect('login');
 });
 
+
 Route::post('login', [AuthController::class, 'login'])->name('admin.login');
-Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'verified', 'user.authorization']], function () {
     // Crud Generator Route
     Route::get('/crud-generator', CrudGenerator::class)->name('crud.generator');
 
+    // user management
+    Route::get('/permission', Permission::class)->name('permission');
+    Route::get('/permission-role/{role_id}', PermissionRole::class)->name('permission.role');
+    Route::get('/role', Role::class)->name('role');
+    Route::get('/user', User::class)->name('user');
+
     // App Route
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
+
+    // Master data
+
 });
