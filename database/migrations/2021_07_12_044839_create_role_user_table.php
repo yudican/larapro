@@ -3,10 +3,9 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTeamUserTable extends Migration
+class CreateRoleUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,22 +14,20 @@ class CreateTeamUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('team_user', function (Blueprint $table) {
+        Schema::create('role_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('team_id');
+            $table->foreignUuid('role_id');
             $table->foreignUuid('user_id');
-            $table->string('role', 191);
-            $table->timestamps();
+            // $table->timestamps();
 
-            $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-        DB::table('team_user')->insert(
+        DB::table('role_user')->insert(
             [
-                'team_id' => '15db38e9-f38a-48ef-acd3-67superadmin',
+                'role_id' => '0c1afb3f-1de0-4cb4-a512-f8ef9fc8e816',
                 'user_id' => '0effb42c-7369-4ced-960a-9aef46dadmin',
-                'role' => 'admin',
             ],
         );
     }
@@ -42,6 +39,6 @@ class CreateTeamUserTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('team_user');
+        Schema::dropIfExists('role_user');
     }
 }
