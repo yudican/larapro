@@ -21,11 +21,15 @@ class CrudGenerator extends Component
     public $have_richtext = false;
     public function mount()
     {
+        $table_name = 'Tables_in_' . config('database.database_name');
+        $exlude_table = ['failed_jobs', 'migrations', 'password_resets', 'permission_role', 'permissions', 'personal_access_tokens', 'role_user', 'roles', 'sessions', 'team_user', 'teams', 'users'];
         $columns = Schema::getAllTables();
         foreach ($columns as $key => $value) {
-            $this->tables[] = [
-                'name' => $value->Tables_in_ . env('DB_DATABASE', 'forge')
-            ];
+            if (!in_array($value->$table_name, $exlude_table)) {
+                $this->tables[] =  [
+                    'name' => $value->$table_name
+                ];
+            }
         }
     }
     public function render()

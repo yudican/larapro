@@ -16,7 +16,7 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
@@ -34,7 +34,11 @@ class CreateUsersTable extends Migration
                 'email' => 'superadmin@admin.com',
                 'password' => Hash::make('superadmin123'),
                 'current_team_id' => 1,
-            ],
+            ]
+
+        );
+
+        DB::table('users')->insert(
             [
                 'id' => '0effb42c-7369-4ced-960a-9aef46dadmin',
                 'name' => 'Admin',

@@ -27,6 +27,8 @@ class CreateRolesTable extends Migration
                 'role_type' => 'superadmin',
                 'role_name' => 'Superadmin',
             ],
+        );
+        DB::table('roles')->insert(
             [
                 'id' => '0c1afb3f-1de0-4cb4-a512-f8ef9fc8e816',
                 'role_type' => 'admin',

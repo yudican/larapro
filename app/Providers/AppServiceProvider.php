@@ -27,12 +27,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $team = Team::find(1);
-        View::share(['curteam' => $team]);
-        Schema::defaultStringLength(191);
+        if (Schema::hasTable('teams')) {
+            $team = optional(Team::find(1));
+            View::share(['curteam' => $team]);
+            Schema::defaultStringLength(191);
 
-        config(['app.locale' => 'id']);
-        Carbon::setLocale('id');
-        date_default_timezone_set('Asia/Jakarta');
+            config(['app.locale' => 'id']);
+            Carbon::setLocale('id');
+            date_default_timezone_set('Asia/Jakarta');
+        }
     }
 }

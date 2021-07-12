@@ -16,9 +16,9 @@ class CreateTeamsTable extends Migration
     {
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
-            $table->foreignUuid('user_id');
             $table->string('name', 191);
             $table->tinyInteger('personal_team')->default(1);
+            $table->foreignUuid('user_id');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Actions\Jetstream\DeleteUser;
 use App\Models\Role;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Jetstream\Jetstream;
 
@@ -40,18 +41,20 @@ class JetstreamServiceProvider extends ServiceProvider
     {
         Jetstream::defaultApiTokenPermissions(['read']);
 
-        $roles = Role::with('permissions')->get();
+        if (Schema::hasTable('roles')) {
+            $roles = Role::with('permissions')->get();
 
-        if (count($roles) > 0) {
-            foreach ($roles as $role) {
-                $permissions = [];
-                if ($role->permissions->count() > 0) {
-                    foreach ($role->permissions as $permission) {
-                        $permissions[] = $permission->permission_value;
+            if (count($roles) > 0) {
+                foreach ($roles as $role) {
+                    $permissions = [];
+                    if ($role->permissions->count() > 0) {
+                        foreach ($role->permissions as $permission) {
+                            $permissions[] = $permission->permission_value;
+                        }
                     }
+                    // dd($permissions);
+                    Jetstream::role($role->role_type, __($role->role_name), $permissions)->description(__($role->role_name));
                 }
-                // dd($permissions);
-                Jetstream::role($role->role_type, __($role->role_name), $permissions)->description(__($role->role_name));
             }
         }
     }

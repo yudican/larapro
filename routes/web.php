@@ -3,6 +3,10 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Livewire\CrudGenerator;
 use App\Http\Livewire\Dashboard;
+use App\Http\Livewire\UserManagement\Permission;
+use App\Http\Livewire\UserManagement\PermissionRole;
+use App\Http\Livewire\UserManagement\Role;
+use App\Http\Livewire\UserManagement\User;
 use Illuminate\Support\Facades\Route;
 
 /*
