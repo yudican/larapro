@@ -9,9 +9,6 @@ use Laravel\Jetstream\Team as JetstreamTeam;
 class Team extends JetstreamTeam
 {
   use HasFactory;
-  use Uuid;
-
-  public $incrementing = false;
   /**
    * The attributes that should be cast to native types.
    *
