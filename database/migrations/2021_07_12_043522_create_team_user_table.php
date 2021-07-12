@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
 class CreateTeamUserTable extends Migration
@@ -15,8 +17,23 @@ class CreateTeamUserTable extends Migration
     {
         Schema::create('team_user', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('team_id');
+            $table->foreignUuid('user_id');
+            $table->string('role', 191);
             $table->timestamps();
+
+            $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
+
+        DB::table('users')->insert(
+            array(
+                'name' => 'Superadmin',
+                'email' => 'superadmin@admin.com',
+                'password' => Hash::make('superadmin123'),
+                'current_team_id' => 1,
+            )
+        );
     }
 
     /**
