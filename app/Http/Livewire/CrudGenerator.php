@@ -24,7 +24,7 @@ class CrudGenerator extends Component
         $columns = Schema::getAllTables();
         foreach ($columns as $key => $value) {
             $this->tables[] = [
-                'name' => $value->Tables_in_pemesanan
+                'name' => $value->Tables_in_ . env('DB_DATABASE', 'forge')
             ];
         }
     }
