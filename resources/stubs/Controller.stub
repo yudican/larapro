@@ -9,6 +9,7 @@ class [fileName] extends Component
 {
     [tableId];
     [tableColumn];
+    [tableFileColumn];
    
 
     public $form_active = false;
@@ -99,8 +100,8 @@ class [fileName] extends Component
         $this->emit('closeModal');
         [getTableId] = null;
         [resetForm];
-         $this->form = [useForm];
-         $this->form_active = false;
+        $this->form = [useForm];
+        $this->form_active = false;
         $this->update_mode = false;
         $this->modal = [useModal];
     }

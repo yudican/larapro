@@ -24,7 +24,7 @@ class CrudGenerator extends Component
         $columns = Schema::getAllTables();
         foreach ($columns as $key => $value) {
             $this->tables[] = [
-                'name' => $value->Tables_in_gift_app
+                'name' => $value->Tables_in_pemesanan
             ];
         }
     }
@@ -63,7 +63,7 @@ class CrudGenerator extends Component
         $controller_name = $this->filename;
         $view_name = str_replace('_', '-', $this->table);
 
-        $controllerTemplate = $this->controllerTemplate();
+        $controllerTemplate = $this->controllerTemplate($field_columns);
         $viewTemplate = $this->viewTemplate($field_columns);
         $modelTemplate = $this->modelTemplate($field_columns);
 
@@ -93,7 +93,7 @@ class CrudGenerator extends Component
         return $this->emit('showAlert', ['msg' => 'CRUD Berhasil Dibuat']);
     }
 
-    public function controllerTemplate()
+    public function controllerTemplate($field_columns)
     {
         $controllerTemplate = str_replace(
             [
@@ -102,6 +102,7 @@ class CrudGenerator extends Component
                 '[fileName]',
                 '[tableId]',
                 '[tableColumn]',
+                '[tableFileColumn]',
                 '[table_name]',
                 '[viewName]',
                 '[useForm]',
@@ -119,6 +120,7 @@ class CrudGenerator extends Component
                 $this->filename,
                 'public $' . $this->table . '_id',
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getTableColumn())),
+                str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getFileTableColumn($field_columns))),
                 $this->table,
                 str_replace('_', '-', $this->table),
                 $this->form_type == 'form' ? 'true' : 'false',
@@ -128,7 +130,7 @@ class CrudGenerator extends Component
                 str_replace('<br>', '', implode(',' . PHP_EOL, $this->_makeRules())),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getDataById($this->table))),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_resetForm())),
-                strtolower($this->folder_namespace)
+                strtolower($this->folder_namespace),
             ],
             $this->getStub('Controller')
         );
@@ -146,6 +148,7 @@ class CrudGenerator extends Component
                 '[richText]',
                 '[itemLabel]',
                 '[itemValue]',
+                '[fileName]',
             ],
             [
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_makeFormInput($field_columns))),
@@ -154,6 +157,7 @@ class CrudGenerator extends Component
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_getRichText($field_columns))),
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_getItemLabel($field_columns))),
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_getItemValue($field_columns))),
+                str_replace('_', ' ', $this->table),
             ],
             $this->getStub($this->form_type == 'modal' ? 'ViewModal' : 'View')
         );
@@ -222,12 +226,17 @@ class CrudGenerator extends Component
                             </div>';
             }
 
-            if (in_array($value['type'], ['text', 'number', 'hidden', 'date'])) {
+            if (in_array($value['type'], ['text', 'number', 'hidden', 'date', 'password'])) {
                 $column_render[] = '<x-text-field type="' . $value['type'] . '" name="' . $key . '" label="' . $value['label'] . '" />';
             }
 
             if ($value['type'] == 'select') {
                 $column_render[] = '<x-select name="' . $key . '" label="' . $value['label'] . '" ><option value="">Select ' . $value['label'] . '</option></x-select>';
+            }
+
+            if (in_array($value['type'], ['image'])) {
+                $column_render[] = '<x-input-photo foto="{{$' . $key . '}}" path="{{optional($' . $key . '_path)->temporaryUrl()}}"
+                            name="' . $key . '_path" />';
             }
         }
 
@@ -278,6 +287,19 @@ class CrudGenerator extends Component
         $column_render = [];
         foreach ($this->columns as $column) {
             $column_render[] = 'public $' . $column;
+        }
+
+        return $column_render;
+    }
+
+    public function _getFileTableColumn($field_columns)
+    {
+        $column_render = [];
+        foreach ($field_columns as $key => $value) {
+            if (in_array($value['type'], ['image'])) {
+                $column_render[] = 'public $' . $key;
+                $column_render[] = 'public $' . $key . '_path';
+            }
         }
 
         return $column_render;
