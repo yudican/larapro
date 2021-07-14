@@ -76,7 +76,11 @@ class CrudGenerator extends Component
         $folder_namespace = $this->folder_namespace;
         $folder_namespace_lowertext = strtolower($this->folder_namespace);
 
-        if (!is_dir(app_path("/Http/Livewire/" . $this->folder_namespace))) {
+        if (!is_dir(app_path("/Http/Livewire/" . $folder_namespace))) {
+            mkdir(app_path("/Http/Livewire/" . $folder_namespace));
+        }
+
+        if (!is_dir(app_path("/Http/Livewire/Table"))) {
             mkdir(app_path("/Http/Livewire/Table"));
         }
 
