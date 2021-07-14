@@ -19,6 +19,8 @@ class [fileName] extends Component
     public $update_mode = false;
     public $modal = [useModal];
 
+    protected $listeners = ['getDataById', 'getId'];
+
     public function render()
     {
         return view('livewire.[folderNamespaceLower].[viewName]', [

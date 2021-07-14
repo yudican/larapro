@@ -71,12 +71,14 @@ class CrudGenerator extends Component
         $controllerTemplate = $this->controllerTemplate($field_columns);
         $viewTemplate = $this->viewTemplate($field_columns);
         $modelTemplate = $this->modelTemplate($field_columns);
+        $datatableTemplate = $this->datviewDatatableTemplateaT($field_columns);
 
         $folder_namespace = $this->folder_namespace;
-        $folder_namespace_lowertext = $this->folder_namespace;
+        $folder_namespace_lowertext = strtolower($this->folder_namespace);
 
         if (!is_dir(app_path("/Http/Livewire/" . $this->folder_namespace))) {
-            mkdir(app_path("/Http/Livewire/" . $this->folder_namespace));
+            mkdir(app_path("/Http/Livewire/Table"));
+            mkdir(app_path("/Http/Livewire/Table"));
         }
 
         if (!is_dir(resource_path("/views/livewire/" . strtolower($this->folder_namespace)))) {
@@ -93,6 +95,7 @@ class CrudGenerator extends Component
         }
 
         file_put_contents(app_path("/Models/{$this->filename}.php"), $modelTemplate);
+        file_put_contents(app_path("/Http/Livewire/Table/{$this->filename}.php"), $datatableTemplate);
 
         $this->_reset();
         return $this->emit('showAlert', ['msg' => 'CRUD Berhasil Dibuat']);
@@ -152,6 +155,26 @@ class CrudGenerator extends Component
 
         return $controllerTemplate;
     }
+
+    public function viewDatatableTemplate($field_columns)
+    {
+        $datatableTemplate = str_replace(
+            [
+                '[datatableColumn]',
+                '[fileName]',
+                '[table_name]',
+            ],
+            [
+                str_replace('<br>', '', implode('' . PHP_EOL, $this->_getDatatableColumn($field_columns))),
+                $this->filename,
+                $this->table,
+            ],
+            $this->getStub('Datatable')
+        );
+
+        return $datatableTemplate;
+    }
+
 
     public function viewTemplate($field_columns)
     {
@@ -387,6 +410,24 @@ class CrudGenerator extends Component
         }
 
         return $form_render;
+    }
+
+
+    public function _getDatatableColumn($field_columns)
+    {
+        $column_render = [];
+        foreach ($field_columns as $key => $value) {
+            if (in_array($value['type'], ['image'])) {
+                $column_render[] = 'Column::callback([' . $key . '], function ($image) {
+                return view(\'livewire.components.photo\', [
+                    \'image_url\' => asset(\'storage/\' . $image),
+                ]);
+            })->label(__(' . $value['type'] . ')),';
+            }
+            $column_render[] = 'Column::name(' . $key . ')->label(' . $value['type'] . ')->searchable(),';
+        }
+
+        return $column_render;
     }
 
     public function _makeRules()
