@@ -71,7 +71,7 @@ class CrudGenerator extends Component
         $controllerTemplate = $this->controllerTemplate($field_columns);
         $viewTemplate = $this->viewTemplate($field_columns);
         $modelTemplate = $this->modelTemplate($field_columns);
-        $datatableTemplate = $this->datviewDatatableTemplateaT($field_columns);
+        $datatableTemplate = $this->viewDatatableTemplate($field_columns);
 
         $folder_namespace = $this->folder_namespace;
         $folder_namespace_lowertext = strtolower($this->folder_namespace);
