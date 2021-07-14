@@ -107,6 +107,7 @@ class [fileName] extends Component
     public function _reset()
     {
         $this->emit('closeModal');
+        $this->emit('refreshTable');
         [getTableId] = null;
         [resetForm];
         $this->form = [useForm];
