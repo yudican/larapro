@@ -23,7 +23,7 @@ class [fileName]Table extends LivewireDatatable
 
     public function columns()
     {
-        $this->hide = HideableColumn::where(['table_name' => $this->[table_name], 'user_id' => auth()->user()->id])->pluck('column_name')->toArray();
+        $this->hide = HideableColumn::where(['table_name' => $this->table_name, 'user_id' => auth()->user()->id])->pluck('column_name')->toArray();
         return [
             [datatableColumn]
 
