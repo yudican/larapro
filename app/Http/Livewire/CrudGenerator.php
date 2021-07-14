@@ -78,7 +78,6 @@ class CrudGenerator extends Component
 
         if (!is_dir(app_path("/Http/Livewire/" . $this->folder_namespace))) {
             mkdir(app_path("/Http/Livewire/Table"));
-            mkdir(app_path("/Http/Livewire/Table"));
         }
 
         if (!is_dir(resource_path("/views/livewire/" . strtolower($this->folder_namespace)))) {
