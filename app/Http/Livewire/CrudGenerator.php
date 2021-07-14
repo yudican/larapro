@@ -178,6 +178,9 @@ class CrudGenerator extends Component
 
     public function viewTemplate($field_columns)
     {
+        $pieces = preg_split('/(?=[A-Z])/', $this->filename . 'Table');
+        $result = array_diff($pieces, ['']);
+
         $viewTemplate = str_replace(
             [
                 '[formInput]',
@@ -187,6 +190,7 @@ class CrudGenerator extends Component
                 '[itemLabel]',
                 '[itemValue]',
                 '[fileName]',
+                '[datatableName]',
             ],
             [
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_makeFormInput($field_columns))),
@@ -196,6 +200,8 @@ class CrudGenerator extends Component
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_getItemLabel($field_columns))),
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_getItemValue($field_columns))),
                 str_replace('_', ' ', $this->table),
+                str_replace('_', ' ', $this->table),
+                strtolower(implode('-', $result))
             ],
             $this->getStub($this->form_type == 'modal' ? 'ViewModal' : 'View')
         );

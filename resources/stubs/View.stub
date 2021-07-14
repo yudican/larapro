@@ -20,46 +20,21 @@
             </div>
         </div>
         <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    @if ($form_active)
+            @if ($form_active)
+                <div class="card">
+                    <div class="card-body">
                     [formInput]
 
                     <div class="form-group">
                         <button class="btn btn-primary pull-right"
                             wire:click="{{$update_mode ? 'update' : 'store'}}">Simpan</button>
                     </div>
-                    @else
-                    <table class="table table-light">
-                        <thead class="thead-light">
-                            <tr>
-                                [itemLabel]
-                                <td>Action</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($items as $item)
-                            <tr>
-                               [itemValue]
-                               @if (auth()->user()->hasTeamPermission($curteam, request()->segment(1).':update') || auth()->user()->hasTeamPermission($curteam, request()->segment(1).':delete'))
-                                <td>
-                                @if (auth()->user()->hasTeamPermission($curteam, request()->segment(1).':update'))
-                                    <button class="btn btn-success btn-sm" wire:click="getDataById('{{ $item->id }}')" id="btn-edit-{{ $item->id }}"><i class="fas fa-edit"></i></button>
-                                    @endif
-                                @if (auth()->user()->hasTeamPermission($curteam, request()->segment(1).':delete'))
-                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                                        data-target="#confirm-modal" wire:click="getId('{{ $item->id }}')" id="btn-delete-{{ $item->id }}"><i class="fas fa-trash"></i></button>
-                                @endif
-                                </td>
-                                @endif
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    @endif
-
+                    </div>
                 </div>
-            </div>
+            @else
+                <livewire:table.[datatableName] />
+            @endif
+
         </div>
 
         {{-- Modal confirm --}}
