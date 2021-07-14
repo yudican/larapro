@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
 
+
 class CrudGenerator extends Component
 {
     public $table;
@@ -112,11 +113,16 @@ class CrudGenerator extends Component
                 '[useForm]',
                 '[useModal]',
                 '[formRequest]',
+                '[formRequestUpdate]',
                 '[getTableId]',
                 '[makeRules]',
                 '[getDataById]',
                 '[resetForm]',
                 '[folderNamespaceLower]',
+                '[loadStorage]',
+                '[loadFileUpload]',
+                '[loadFileUploadInsert]',
+                '[loadFileUploadUpdate]',
             ],
             [
                 $this->filename,
@@ -129,12 +135,17 @@ class CrudGenerator extends Component
                 str_replace('_', '-', $this->table),
                 $this->form_type == 'form' ? 'true' : 'false',
                 $this->form_type == 'modal' ? 'true' : 'false',
-                str_replace('<br>', '', implode(',' . PHP_EOL, $this->_getFormRequest())),
+                str_replace('<br>', '', implode(',' . PHP_EOL, $this->_getFormRequest($field_columns, 'insert'))),
+                str_replace('<br>', '', implode(',' . PHP_EOL, $this->_getFormRequest($field_columns, 'update'))),
                 '$this->' . $this->table . '_id',
                 str_replace('<br>', '', implode(',' . PHP_EOL, $this->_makeRules())),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getDataById($this->table))),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_resetForm())),
                 strtolower($this->folder_namespace),
+                str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getLoadStorage($field_columns))),
+                $this->_getLoadFileUpload($field_columns),
+                $this->_getLoadFileUploadInsert($field_columns),
+                $this->_getLoadFileUploadUpdate($field_columns),
             ],
             $this->getStub('Controller')
         );
@@ -301,19 +312,78 @@ class CrudGenerator extends Component
         $column_render = [];
         foreach ($field_columns as $key => $value) {
             if (in_array($value['type'], ['image'])) {
-                $column_render[] = 'public $' . $key;
-                $column_render[] = 'public $' . $key . '_path';
+                $column_render[] = 'public $' . $key . '_path;';
             }
         }
 
         return $column_render;
     }
 
-    public function _getFormRequest()
+    public function _getLoadStorage($field_columns)
+    {
+        $column_render = [];
+        foreach ($field_columns as $key => $value) {
+            if (in_array($value['type'], ['image'])) {
+                $column_render[] = 'use Illuminate\Support\Facades\Storage';
+                $column_render[] = 'use Livewire\WithFileUploads;';
+            }
+        }
+        return $column_render;
+    }
+
+    public function _getLoadFileUpload($field_columns)
+    {
+        foreach ($field_columns as $key => $value) {
+            if (in_array($value['type'], ['image'])) {
+                return 'use WithFileUploads;';
+            }
+        }
+        return '';
+    }
+
+    public function _getLoadFileUploadInsert($field_columns)
+    {
+        $column_render = [];
+        foreach ($field_columns as $key => $value) {
+            if (in_array($value['type'], ['image'])) {
+                if ($key == count($column_render) - 1) {
+                    $column_render[] = '$' . $key . ' = $this->' . $key . '_path->store(\'upload\', \'public\');';
+                } else {
+                    $column_render[] = '$' . $key . ' = $this->' . $key . '_path->store(\'upload\', \'public\')';
+                }
+            }
+        }
+
+        return $column_render;
+    }
+
+    public function _getLoadFileUploadUpdate($field_columns)
+    {
+        $column_render = [];
+        foreach ($field_columns as $key => $value) {
+            if (in_array($value['type'], ['image'])) {
+                $column_render[] = '
+                    if ($this->' . $key . '_path) {
+                        $' . $key . ' = $this->' . $key . '_path->store(\'upload\', \'public\');
+                        $data = [\'' . $key . '\' => $' . $key . '];
+                        if (Storage::exists(\'public/\' . $this->' . $key . ')) {
+                            Storage::delete(\'public/\' . $this->' . $key . ');
+                        }
+                    }';
+            }
+        }
+
+        return $column_render;
+    }
+
+    public function _getFormRequest($field_columns, $type)
     {
         $form_render = [];
-        foreach ($this->columns as $column) {
-            $form_render[] = '\'' . $column . '\'  => $this->' . $column . '';
+        foreach ($field_columns as $key => $value) {
+            if (in_array($value['type'], ['image']) && $type == 'insert') {
+                $form_render[] = '\'' . $key . '\'  => $' . $key . '';
+            }
+            $form_render[] = '\'' . $key . '\'  => $this->' . $key . '';
         }
 
         return $form_render;

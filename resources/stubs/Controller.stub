@@ -4,12 +4,14 @@ namespace App\Http\Livewire\[folderNamespace];
 
 use App\Models\[modelName] as Models[modelName];
 use Livewire\Component;
+[loadStorage]
 
 class [fileName] extends Component
 {
+    [loadFileUpload]
     [tableId];
     [tableColumn];
-    [tableFileColumn];
+    [tableFileColumn]
    
 
     public $form_active = false;
@@ -27,9 +29,10 @@ class [fileName] extends Component
     public function store()
     {
         $this->_validate();
-        Models[modelName]::create([
-            [formRequest]
-        ]);
+        [loadFileUploadInsert]
+        $data = [[formRequest]];
+
+        Models[modelName]::create($data);
 
         $this->_reset();
         return $this->emit('showAlert', ['msg' => 'Data Berhasil Disimpan']);
@@ -38,9 +41,13 @@ class [fileName] extends Component
     public function update()
     {
         $this->_validate();
-        Models[modelName]::find([getTableId])->update([
-            [formRequest]
-        ]);
+
+        $data = [[formRequestUpdate]];
+        $row = Models[modelName]::find([getTableId]);
+
+        [loadFileUploadUpdate]
+
+        $row->update($data);
 
         $this->_reset();
         return $this->emit('showAlert', ['msg' => 'Data Berhasil Diupdate']);
