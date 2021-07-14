@@ -147,8 +147,8 @@ class CrudGenerator extends Component
                 strtolower($this->folder_namespace),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getLoadStorage($field_columns))),
                 $this->_getLoadFileUpload($field_columns),
-                $this->_getLoadFileUploadInsert($field_columns),
-                $this->_getLoadFileUploadUpdate($field_columns),
+                str_replace('<br>', '', implode('' . PHP_EOL, $this->_getLoadFileUploadInsert($field_columns))),
+                str_replace('<br>', '', implode('' . PHP_EOL, $this->_getLoadFileUploadUpdate($field_columns))),
             ],
             $this->getStub('Controller')
         );
@@ -375,11 +375,7 @@ class CrudGenerator extends Component
         $column_render = [];
         foreach ($field_columns as $key => $value) {
             if (in_array($value['type'], ['image'])) {
-                if ($key == count($column_render) - 1) {
-                    $column_render[] = '$' . $key . ' = $this->' . $key . '_path->store(\'upload\', \'public\');';
-                } else {
-                    $column_render[] = '$' . $key . ' = $this->' . $key . '_path->store(\'upload\', \'public\')';
-                }
+                $column_render[] = '$' . $key . ' = $this->' . $key . '_path->store(\'upload\', \'public\');';
             }
         }
 
