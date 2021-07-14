@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="col-md-12">
-            <livewire:table.[datatableName] />
+            <livewire:table.[datatableName]-table />
         </div>
 
         {{-- Modal form --}}

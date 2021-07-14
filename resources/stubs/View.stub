@@ -32,7 +32,7 @@
                     </div>
                 </div>
             @else
-                <livewire:table.[datatableName] />
+                <livewire:table.[datatableName]-table />
             @endif
 
         </div>

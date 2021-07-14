@@ -98,7 +98,7 @@ class CrudGenerator extends Component
         }
 
         file_put_contents(app_path("/Models/{$this->filename}.php"), $modelTemplate);
-        file_put_contents(app_path("/Http/Livewire/Table/{$this->filename}.php"), $datatableTemplate);
+        file_put_contents(app_path("/Http/Livewire/Table/{$this->filename}Table.php"), $datatableTemplate);
 
         $this->_reset();
         return $this->emit('showAlert', ['msg' => 'CRUD Berhasil Dibuat']);
@@ -181,7 +181,7 @@ class CrudGenerator extends Component
 
     public function viewTemplate($field_columns)
     {
-        $pieces = preg_split('/(?=[A-Z])/', $this->filename . 'Table');
+        $pieces = preg_split('/(?=[A-Z])/', $this->filename);
         $result = array_diff($pieces, ['']);
 
         $viewTemplate = str_replace(
@@ -202,7 +202,6 @@ class CrudGenerator extends Component
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_getRichText($field_columns))),
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_getItemLabel($field_columns))),
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_getItemValue($field_columns))),
-                str_replace('_', ' ', $this->table),
                 str_replace('_', ' ', $this->table),
                 strtolower(implode('-', $result))
             ],
@@ -423,13 +422,13 @@ class CrudGenerator extends Component
         $column_render = [];
         foreach ($field_columns as $key => $value) {
             if (in_array($value['type'], ['image'])) {
-                $column_render[] = 'Column::callback([' . $key . '], function ($image) {
+                $column_render[] = 'Column::callback([\' ' . $key . ' \'], function ($image) {
                 return view(\'livewire.components.photo\', [
                     \'image_url\' => asset(\'storage/\' . $image),
                 ]);
-            })->label(__(' . $value['type'] . ')),';
+            })->label(__(\'' . $value['type'] . '\')),';
             }
-            $column_render[] = 'Column::name(' . $key . ')->label(' . $value['type'] . ')->searchable(),';
+            $column_render[] = 'Column::name(\'' . $key . '\')->label(\'' . $value['label'] . '\')->searchable(),';
         }
 
         return $column_render;
