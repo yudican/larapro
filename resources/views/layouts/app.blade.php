@@ -33,6 +33,14 @@
     @stack('styles')
     @livewireStyles
 
+    <style>
+        input[type=checkbox],
+        input[type=radio] {
+            box-sizing: border-box;
+            padding: 7px;
+        }
+    </style>
+
     <!-- Scripts -->
     {{-- <script src="{{ mix('js/app.js') }}" defer></script> --}}
 </head>

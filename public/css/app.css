@@ -570,9 +570,9 @@ video {
      -moz-appearance: none;
           appearance: none;
   background-color: #fff;
-  border-color: #6b7280;
+  border-color: #e5e7eb;
   border-width: 1px;
-  border-radius: 0px;
+  border-radius: 5px;
   padding-top: 0.5rem;
   padding-right: 0.75rem;
   padding-bottom: 0.5rem;
