@@ -641,7 +641,7 @@ select {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
-  padding: 0;
+  padding: 7px;
   -webkit-print-color-adjust: exact;
           color-adjust: exact;
   display: inline-block;
@@ -658,6 +658,7 @@ select {
   background-color: #fff;
   border-color: #6b7280;
   border-width: 1px;
+  box-sizing: border-box;
 }
 
 [type='checkbox'] {
