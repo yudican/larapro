@@ -26,7 +26,7 @@ class CreateTeamsTable extends Migration
 
         DB::table('teams')->insert([
             [
-                'user_id' => '15db38e9-f38a-48ef-acd3-67superadmin',
+                'user_id' => '963b12db-5dbf-4cd5-91f7-366b2123ccb9',
                 'name' => 'Superadmin',
                 'personal_team' => 1,
             ]

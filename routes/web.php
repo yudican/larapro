@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Livewire\CrudGenerator;
 use App\Http\Livewire\Dashboard;
+use App\Http\Livewire\Settings\Menu;
 use App\Http\Livewire\UserManagement\Permission;
 use App\Http\Livewire\UserManagement\PermissionRole;
 use App\Http\Livewire\UserManagement\Role;
@@ -35,6 +36,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'user.authorization']
     Route::get('/permission-role/{role_id}', PermissionRole::class)->name('permission.role');
     Route::get('/role', Role::class)->name('role');
     Route::get('/user', User::class)->name('user');
+    Route::get('/menu', Menu::class)->name('menu');
 
     // App Route
     Route::get('/dashboard', Dashboard::class)->name('dashboard');

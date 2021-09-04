@@ -37,8 +37,8 @@ class CreateMenusTable extends Migration
             ],
             [
                 'menu_label' => 'Site Management',
-                'menu_route' => '#site-management',
-                'menu_icon' => 'fas fa-cogs',
+                'menu_route' => '#',
+                'menu_icon' => 'fas fa-key',
                 'menu_order' => 2,
                 'parent_id' => null,
                 'created_at' => Carbon::now(),
@@ -68,6 +68,15 @@ class CreateMenusTable extends Migration
                 'menu_icon' => null,
                 'menu_order' => 3,
                 'parent_id' => 2,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'menu_label' => 'Crud Generator',
+                'menu_route' => 'crud.generator',
+                'menu_icon' => 'fas fa-cogs',
+                'menu_order' => 3,
+                'parent_id' => null,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ]

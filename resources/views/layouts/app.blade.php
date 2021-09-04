@@ -121,61 +121,38 @@
                         </div>
                     </div>
                     <ul class="nav nav-primary">
-                        @if (auth()->user()->hasTeamPermission($curteam, 'dashboard:read'))
-                        <li class="nav-item {{request()->routeIs('dashboard') ? 'active' : ''}}">
-                            <a href="{{route('dashboard')}}">
-                                <i class="fas fa-home"></i>
-                                <p>Dashboard</p>
-                            </a>
-                        </li>
-                        @endif
-
-                        @if (auth()->user()->hasTeamPermission($curteam, 'role:read') ||
-                        auth()->user()->hasTeamPermission($curteam, 'permission:read'))
+                        @foreach (Auth::user()->menus as $menu)
+                        @if ($menu->children && $menu->children->count() > 0)
                         <li
-                            class="nav-item {{request()->routeIs('role') || request()->routeIs('permission') ? 'active' : ''}}">
-                            <a data-toggle="collapse" href="#role-permission" class="collapsed" aria-expanded="false">
-                                <i class="fas fa-key"></i>
-                                <p>Role & Permission</p>
+                            class="nav-item 
+                        @foreach ($menu->children as $children) {{request()->routeIs($children->menu_route) ? 'active' : ''}} @endforeach ">
+                            <a data-toggle="collapse" href="#colapse-{{$menu->id}}" class="collapsed"
+                                aria-expanded="false">
+                                <i class="{{$menu->menu_icon}}"></i>
+                                <p>{{$menu->menu_label}}</p>
                                 <span class="caret"></span>
                             </a>
-                            <div class="collapse" id="role-permission">
+                            <div class="collapse" id="colapse-{{$menu->id}}">
                                 <ul class="nav nav-collapse">
-                                    @if (auth()->user()->hasTeamPermission($curteam, 'role:read'))
-                                    <li class="{{request()->routeIs('role') ? 'active' : ''}}">
-                                        <a href="{{route('role')}}">
-                                            <span>Role</span>
+                                    @foreach ($menu->children as $children)
+                                    <li class="{{request()->routeIs($children->menu_route) ? 'active' : ''}}">
+                                        <a href="{{route($children->menu_route)}}">
+                                            <span>{{$children->menu_label}}</span>
                                         </a>
                                     </li>
-                                    @endif
-                                    @if (auth()->user()->hasTeamPermission($curteam, 'permission:read'))
-                                    <li class="{{request()->routeIs('permission') ? 'active' : ''}}">
-                                        <a href="{{route('permission')}}">
-                                            <span>Permission</span>
-                                        </a>
-                                    </li>
-                                    @endif
+                                    @endforeach
                                 </ul>
                             </div>
                         </li>
-                        @endif
-
-                        @if (auth()->user()->hasTeamPermission($curteam, 'crud-generator:read'))
-                        <li class="nav-item {{request()->routeIs('crud.generator') ? 'active' : ''}}">
-                            <a href="{{route('crud.generator')}}">
-                                <i class="fas fa-cogs"></i>
-                                <p>Crud Generator</p>
+                        @else
+                        <li class="nav-item {{request()->routeIs($menu->menu_route) ? 'active' : ''}}">
+                            <a href="{{$menu->menu_route == '#' ? '#' : route($menu->menu_route)}}">
+                                <i class="{{$menu->menu_icon}}"></i>
+                                <p>{{$menu->menu_label}}</p>
                             </a>
                         </li>
                         @endif
-
-
-                        {{-- <li class="nav-item {{request()->routeIs('attendance.report') ? 'active' : ''}}">
-                        <a href="{{route('attendance.report')}}">
-                            <i class="fas fa-cogs"></i>
-                            <p>Log Absensi</p>
-                        </a>
-                        </li> --}}
+                        @endforeach
 
                     </ul>
                 </div>

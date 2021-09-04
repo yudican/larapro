@@ -62,5 +62,27 @@ class User extends Authenticatable
      */
     protected $appends = [
         'profile_photo_url',
+        'role',
+        'menus'
     ];
+
+    /**
+     * The roles that belong to the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function getRoleAttribute()
+    {
+        return $this->roles()->first();
+    }
+
+    public function getMenusAttribute()
+    {
+        return $this->role->menus()->with('children')->where('parent_id')->get();
+    }
 }

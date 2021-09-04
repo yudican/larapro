@@ -26,8 +26,12 @@ class CreateRoleUserTable extends Migration
 
         DB::table('role_user')->insert([
             [
+                'role_id' => 'aaf5ab14-a1cd-46c9-9838-84188cd064b6',
+                'user_id' => '963b12db-5dbf-4cd5-91f7-366b2123ccb9',
+            ],
+            [
                 'role_id' => '0c1afb3f-1de0-4cb4-a512-f8ef9fc8e816',
-                'user_id' => '0effb42c-7369-4ced-960a-9aef46dadmin',
+                'user_id' => 'e859c822-4bd1-472b-84eb-361799c0d850',
             ],
             [
                 'role_id' => '0feb7d3a-90c0-42b9-be3f-63757088cb9a',

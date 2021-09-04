@@ -30,7 +30,7 @@ class CreateUsersTable extends Migration
 
         DB::table('users')->insert([
             [
-                'id' => '15db38e9-f38a-48ef-acd3-67superadmin',
+                'id' => '963b12db-5dbf-4cd5-91f7-366b2123ccb9',
                 'name' => 'Superadmin',
                 'email' => 'superadmin@admin.com',
                 'password' => Hash::make('superadmin123'),
@@ -39,7 +39,7 @@ class CreateUsersTable extends Migration
                 'updated_at' => Carbon::now()
             ],
             [
-                'id' => '0effb42c-7369-4ced-960a-9aef46dadmin',
+                'id' => 'e859c822-4bd1-472b-84eb-361799c0d850',
                 'name' => 'Admin',
                 'email' => 'admin@admin.com',
                 'password' => Hash::make('admin123'),

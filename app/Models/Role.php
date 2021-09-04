@@ -18,13 +18,13 @@ class Role extends Model
     protected $dates = [];
 
     /**
-     * Get all of the users for the Role
+     * The users that belong to the Role
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsToMany(User::class);
     }
 
     /**
@@ -35,5 +35,15 @@ class Role extends Model
     public function permissions()
     {
         return $this->belongsToMany(Permission::class);
+    }
+
+    /**
+     * The menus that belong to the Role
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function menus()
+    {
+        return $this->belongsToMany(Menu::class);
     }
 }

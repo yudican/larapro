@@ -30,7 +30,7 @@ class CreateTeamUserTable extends Migration
             [
                 [
                     'team_id' => 1,
-                    'user_id' => '0effb42c-7369-4ced-960a-9aef46dadmin',
+                    'user_id' => 'e859c822-4bd1-472b-84eb-361799c0d850',
                     'role' => 'admin',
                 ],
                 [
