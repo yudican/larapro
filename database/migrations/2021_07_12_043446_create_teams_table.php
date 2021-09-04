@@ -24,13 +24,13 @@ class CreateTeamsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
-        DB::table('teams')->insert(
-            array(
+        DB::table('teams')->insert([
+            [
                 'user_id' => '15db38e9-f38a-48ef-acd3-67superadmin',
                 'name' => 'Superadmin',
                 'personal_team' => 1,
-            )
-        );
+            ]
+        ]);
     }
 
     /**

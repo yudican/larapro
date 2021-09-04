@@ -1,7 +1,9 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateMenusTable extends Migration
@@ -17,11 +19,61 @@ class CreateMenusTable extends Migration
             $table->id();
             $table->string('menu_label', 50);
             $table->string('menu_route', 30);
-            $table->string('menu_icon', 30);
-            $table->string('menu_order', 30);
+            $table->string('menu_icon', 30)->nullable();
+            $table->integer('menu_order')->default(0)->nullable();
             $table->bigInteger('parent_id')->nullable();
             $table->timestamps();
         });
+
+        $menus = [
+            [
+                'menu_label' => 'Dashboard',
+                'menu_route' => 'dashboard',
+                'menu_icon' => 'fas fa-home',
+                'menu_order' => 1,
+                'parent_id' => null,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'menu_label' => 'Site Management',
+                'menu_route' => '#site-management',
+                'menu_icon' => 'fas fa-cogs',
+                'menu_order' => 2,
+                'parent_id' => null,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'menu_label' => 'Menu',
+                'menu_route' => 'menu',
+                'menu_icon' => null,
+                'menu_order' => 1,
+                'parent_id' => 2,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'menu_label' => 'Role',
+                'menu_route' => 'role',
+                'menu_icon' => null,
+                'menu_order' => 2,
+                'parent_id' => 2,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'menu_label' => 'Permission',
+                'menu_route' => 'permission',
+                'menu_icon' => null,
+                'menu_order' => 3,
+                'parent_id' => 2,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]
+        ];
+
+        DB::table('menus')->insert($menus);
     }
 
     /**

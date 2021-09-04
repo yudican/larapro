@@ -28,10 +28,17 @@ class CreateTeamUserTable extends Migration
 
         DB::table('team_user')->insert(
             [
-                'team_id' => 1,
-                'user_id' => '0effb42c-7369-4ced-960a-9aef46dadmin',
-                'role' => 'admin',
-            ],
+                [
+                    'team_id' => 1,
+                    'user_id' => '0effb42c-7369-4ced-960a-9aef46dadmin',
+                    'role' => 'admin',
+                ],
+                [
+                    'team_id' => 1,
+                    'user_id' => 'b831b338-7a64-4c5e-a613-b83ddd9b133d',
+                    'role' => 'member',
+                ],
+            ]
         );
     }
 
