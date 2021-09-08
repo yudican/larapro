@@ -50,7 +50,7 @@
                         <ol class="dd-list w-100">
                             @foreach ($items as $item)
                             @if ($item->children && $item->children->count() > 0)
-                            <li class="dd-item" data-id="{{$item->id}}">
+                            <li class="dd-item " data-id="{{$item->id}}">
                                 <div style="position: absolute;z-index:1; right:10px;top:10px;">
                                     <button class="btn btn-success btn-sm mr-2"
                                         wire:click="getDataById('{{ $item->id }}')" id="btn-edit-{{ $item->id }}"><i
