@@ -3,8 +3,11 @@
 namespace App\Http\Livewire\Settings;
 
 use App\Models\Menu as ModelsMenu;
+use App\Models\Permission;
+use App\Models\Role;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
-
+use Ramsey\Uuid\Uuid;
 
 class Menu extends Component
 {
@@ -15,6 +18,7 @@ class Menu extends Component
     public $menu_icon;
     public $menu_order;
     public $parent_id;
+    public $role_id = [];
     public $menus = [];
 
 
@@ -30,7 +34,8 @@ class Menu extends Component
     public function render()
     {
         return view('livewire.settings.menus', [
-            'items' => ModelsMenu::whereNull('parent_id')->orderBy('menu_order', 'ASC')->get()
+            'items' => ModelsMenu::whereNull('parent_id')->orderBy('menu_order', 'ASC')->get(),
+            'roles' => Role::where('role_type', '!=', 'superadmin')->get()
         ]);
     }
 
@@ -62,19 +67,51 @@ class Menu extends Component
     public function store()
     {
         $this->_validate();
-
         $data = [
             'menu_label'  => $this->menu_label,
             'menu_route'  => $this->menu_route,
             'menu_icon'  => $this->menu_icon,
-            'menu_order'  => $this->menu_order,
+            'menu_order'  => $this->_getOrderNumber(),
             'parent_id'  => $this->parent_id
         ];
 
-        ModelsMenu::create($data);
+        try {
+            DB::beginTransaction();
 
-        $this->_reset();
-        return $this->emit('showAlert', ['msg' => 'Data Berhasil Disimpan']);
+            $menu = ModelsMenu::create($data);
+
+            $menu->roles()->sync(array_merge($this->role_id, ['aaf5ab14-a1cd-46c9-9838-84188cd064b6']));
+
+            if ($this->menu_route != '#') {
+                Permission::insert([
+                    [
+                        'id' => Uuid::uuid4()->toString(),
+                        'permission_value' => $this->menu_route . ':create',
+                        'permission_name' => 'Create ' . $this->menu_label,
+                    ],
+                    [
+                        'id' => Uuid::uuid4()->toString(),
+                        'permission_value' => $this->menu_route . ':update',
+                        'permission_name' => 'Update ' . $this->menu_label,
+                    ],
+                    [
+                        'id' => Uuid::uuid4()->toString(),
+                        'permission_value' => $this->menu_route . ':delete',
+                        'permission_name' => 'Delete ' . $this->menu_label,
+                    ],
+                ]);
+            }
+
+
+            $this->_reset();
+            DB::commit();
+            return $this->emit('showAlert', ['msg' => 'Data Berhasil Disimpan']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            dd($th->getMessage());
+            $this->_reset();
+            return $this->emit('showAlertError', ['msg' => 'Data Gagal Disimpan']);
+        }
     }
 
     public function update()
@@ -88,14 +125,24 @@ class Menu extends Component
             'menu_order'  => $this->menu_order,
             'parent_id'  => $this->parent_id
         ];
-        $row = ModelsMenu::find($this->menus_id);
 
+        try {
+            DB::beginTransaction();
 
+            $menu = ModelsMenu::find($this->menus_id);
+            $menu->update($data);
 
-        $row->update($data);
+            $menu->roles()->sync($this->role_id);
 
-        $this->_reset();
-        return $this->emit('showAlert', ['msg' => 'Data Berhasil Diupdate']);
+            $this->_reset();
+            DB::commit();
+            return $this->emit('showAlert', ['msg' => 'Data Berhasil Diupdate']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+
+            $this->_reset();
+            return $this->emit('showAlertError', ['msg' => 'Data Gagal Diupdate']);
+        }
     }
 
     public function delete()
@@ -111,9 +158,6 @@ class Menu extends Component
         $rule = [
             'menu_label'  => 'required',
             'menu_route'  => 'required',
-            'menu_icon'  => 'required',
-            'menu_order'  => 'required',
-            'parent_id'  => 'required'
         ];
 
         return $this->validate($rule);
@@ -128,6 +172,7 @@ class Menu extends Component
         $this->menu_icon = $menus->menu_icon;
         $this->menu_order = $menus->menu_order;
         $this->parent_id = $menus->parent_id;
+        $this->role_id = $menus->roles()->pluck('roles.id')->toArray();
         if ($this->form) {
             $this->form_active = true;
             $this->emit('loadForm');
@@ -157,6 +202,7 @@ class Menu extends Component
 
     public function _reset()
     {
+        $this->emit('loadForm');
         $this->emit('closeModal');
         $this->emit('refreshTable');
         $this->menus_id = null;
@@ -164,10 +210,20 @@ class Menu extends Component
         $this->menu_route = null;
         $this->menu_icon = null;
         $this->menu_order = null;
+        $this->role_id = [];
         $this->parent_id = null;
         $this->form = true;
         $this->form_active = false;
         $this->update_mode = false;
         $this->modal = false;
+    }
+
+    public function _getOrderNumber()
+    {
+        $menu = ModelsMenu::limit(1)->orderBy('menu_order', 'DESC')->first();
+        if ($menu) {
+            return $menu->menu_order + 1;
+        }
+        return 1;
     }
 }

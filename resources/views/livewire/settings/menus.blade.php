@@ -4,7 +4,7 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title text-capitalize">
-                        <a href="{{route('dashboard')}}">
+                        <a href="{{route('menu')}}">
                             <span><i class="fas fa-arrow-left mr-3"></i>menus</span>
                         </a>
                         <div class="pull-right">
@@ -24,33 +24,84 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
+                    @if ($form_active)
+                    <div>
+                        <x-select name="parent_id" label="Menu Parent">
+                            <option value="">Select Menu Parent</option>
+                            @foreach ($items as $item)
+                            <option value="{{$item->id}}">{{$item->menu_label}}</option>
+                            @endforeach
+                        </x-select>
+                        <x-text-field type="text" name="menu_label" label="Menu Name" />
+                        <x-text-field type="text" name="menu_route" label="Route Name" />
+                        <x-text-field type="text" name="menu_icon" label="Icon Name" />
+                        <x-select name="role_id" id="choices-multiple-remove-button" label="Role" multiple>
+                            @foreach ($roles as $role)
+                            <option value="{{$role->id}}">{{$role->role_name}}</option>
+                            @endforeach
+                        </x-select>
+                        <div class="form-group">
+                            <button class="btn btn-primary pull-right"
+                                wire:click="{{$update_mode ? 'update' : 'store'}}">Save</button>
+                        </div>
+                    </div>
+                    @else
                     <div class="dd">
-                        <ol class="dd-list">
+                        <ol class="dd-list w-100">
                             @foreach ($items as $item)
                             @if ($item->children && $item->children->count() > 0)
                             <li class="dd-item" data-id="{{$item->id}}">
-                                <div class="dd-handle">{{$item->menu_label}}</div>
+                                <div style="position: absolute;z-index:1; right:10px;top:10px;">
+                                    <button class="btn btn-success btn-sm mr-2"
+                                        wire:click="getDataById('{{ $item->id }}')" id="btn-edit-{{ $item->id }}"><i
+                                            class="fas fa-edit"></i></button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+                                        data-target="#confirm-modal" wire:click="getId('{{ $item->id }}')"
+                                        id="btn-delete-{{ $item->id }}"><i class="fas fa-trash"></i></button>
+                                </div>
+                                <div class="dd-handle d-flex justify-between align-items-center p-4">
+                                    <span>{{$item->menu_label}}</span>
+                                </div>
                                 <ol class="dd-list">
                                     @foreach ($item->children()->orderBy('menu_order', 'ASC')->get() as $children)
                                     <li class="dd-item" data-id="{{$children->id}}">
-                                        <div class="dd-handle">{{$children->menu_label}}</div>
+                                        <div style="position: absolute;z-index:1; right:10px;top:10px;">
+                                            <button class="btn btn-success btn-sm mr-2"
+                                                wire:click="getDataById('{{ $children->id }}')"
+                                                id="btn-edit-{{ $children->id }}"><i class="fas fa-edit"></i></button>
+                                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+                                                data-target="#confirm-modal" wire:click="getId('{{ $children->id }}')"
+                                                id="btn-delete-{{ $children->id }}"><i
+                                                    class="fas fa-trash"></i></button>
+                                        </div>
+                                        <div class="dd-handle d-flex justify-between align-items-center p-4">
+                                            <span>{{$children->menu_label}}</span>
+                                        </div>
                                     </li>
                                     @endforeach
                                 </ol>
                             </li>
                             @else
-                            <li class="dd-item" data-id="{{$item->id}}">
-                                <div class="dd-handle">{{$item->menu_label}}</div>
+                            <li class="dd-item" data-id="{{$item->id}}" style="min-height: 0;border-radius:5px;">
+                                <div style="position: absolute;z-index:1; right:10px;top:10px;">
+                                    <button class="btn btn-success btn-sm mr-2"
+                                        wire:click="getDataById('{{ $item->id }}')" id="btn-edit-{{ $item->id }}"><i
+                                            class="fas fa-edit"></i></button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+                                        data-target="#confirm-modal" wire:click="getId('{{ $item->id }}')"
+                                        id="btn-delete-{{ $item->id }}"><i class="fas fa-trash"></i></button>
+                                </div>
+                                <div class="dd-handle d-flex justify-between align-items-center p-4">
+                                    <span>{{$item->menu_label}}</span>
+                                </div>
+
                             </li>
                             @endif
+
                             @endforeach
                         </ol>
                     </div>
-
-                    <div class="form-group">
-                        <button class="btn btn-primary pull-right"
-                            wire:click="{{$update_mode ? 'update' : 'store'}}">Simpan</button>
-                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -78,8 +129,34 @@
     </div>
     @push('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nestable2/1.6.0/jquery.nestable.min.css">
+    <style>
+        .dd {
+            position: relative;
+            display: block;
+            margin: 0;
+            padding: 0;
+            max-width: 100%;
+            list-style: none;
+            font-size: 13px;
+            line-height: 20px;
+        }
+
+        .dd-handle {
+            display: block;
+            margin: 5px 0;
+            padding: 5px 10px;
+            color: #333;
+            text-decoration: none;
+            font-weight: 700;
+            background: #fff;
+            border-radius: 3px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+        }
+    </style>
     @endpush
     @push('scripts')
+    <script src="{{ asset('assets/js/plugin/select2/select2.full.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nestable2/1.6.0/jquery.nestable.min.js"></script>
 
     <script>
@@ -93,16 +170,25 @@
                 @this.call('changeMenu', getMenu(menu));
             }
         });
-        window.livewire.on('loadForm', (data) => {
-            
-        });
 
+        
+
+        
+
+        window.livewire.on('loadForm', (data) => {
+            $('#choices-multiple-remove-button').select2({
+                theme: "bootstrap",
+            });
+            $('#choices-multiple-remove-button').on('change', function (e) {
+                let data = $(this).val();
+                console.log(data)
+                @this.set('role_id', data);
+            });
+        });
         window.livewire.on('closeModal', (data) => {
             $('#confirm-modal').modal('hide')
         });
     })
-
-
     const getMenu = (menu) => {
         let final_menu = [];
         //initial variable
