@@ -77,6 +77,7 @@
                                                 <option value="select">select</option>
                                                 <option value="hidden">hidden</option>
                                                 <option value="date">date</option>
+                                                <option value="image">image</option>
                                             </select>
                                         </td>
                                         <td>
