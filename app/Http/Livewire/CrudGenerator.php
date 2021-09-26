@@ -285,7 +285,7 @@ class CrudGenerator extends Component
 
             if (in_array($value['type'], ['image'])) {
                 $column_render[] = '<x-input-photo foto="{{$' . $key . '}}" path="{{optional($' . $key . '_path)->temporaryUrl()}}"
-                            name="' . $key . '_path" />';
+                            name="' . $key . '_path"  label="' . $value['label'] . '" />';
             }
         }
 
