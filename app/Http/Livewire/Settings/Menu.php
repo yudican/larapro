@@ -83,7 +83,7 @@ class Menu extends Component
             $menu->roles()->sync(array_merge($this->role_id, ['aaf5ab14-a1cd-46c9-9838-84188cd064b6']));
 
             if ($this->menu_route != '#') {
-                Permission::insert([
+                $permission = Permission::insert([
                     [
                         'id' => Uuid::uuid4()->toString(),
                         'permission_value' => $this->menu_route . ':create',
@@ -172,7 +172,8 @@ class Menu extends Component
         $this->menu_icon = $menus->menu_icon;
         $this->menu_order = $menus->menu_order;
         $this->parent_id = $menus->parent_id;
-        $this->role_id = $menus->roles()->pluck('roles.id')->toArray();
+        $role_id = array_merge($menus->roles()->pluck('roles.id')->toArray(), ['aaf5ab14-a1cd-46c9-9838-84188cd064b6']);
+        $this->role_id = $role_id;
         if ($this->form) {
             $this->form_active = true;
             $this->emit('loadForm');

@@ -20,10 +20,11 @@ class CrudGenerator extends Component
     public $field_column = [];
     public $field_columns = [];
     public $have_richtext = false;
+    public $prefix = 'tbl_';
     public function mount()
     {
         $table_name = 'Tables_in_' . config('database.database_name');
-        $exlude_table = ['failed_jobs', 'migrations', 'password_resets', 'permission_role', 'permissions', 'personal_access_tokens', 'role_user', 'roles', 'sessions', 'team_user', 'teams', 'hideable_columns', 'menus', 'menu_role'];
+        $exlude_table = [$this->prefix . 'failed_jobs', $this->prefix . 'migrations', $this->prefix . 'password_resets', $this->prefix . 'permission_role', $this->prefix . 'permissions', $this->prefix . 'personal_access_tokens', $this->prefix . 'role_user', $this->prefix . 'roles', $this->prefix . 'sessions', $this->prefix . 'team_user', $this->prefix . 'teams', $this->prefix . 'hideable_columns', $this->prefix . 'menus', $this->prefix . 'menu_role'];
         $columns = Schema::getAllTables();
         foreach ($columns as $key => $value) {
             if (!in_array($value->$table_name, $exlude_table)) {
@@ -37,9 +38,11 @@ class CrudGenerator extends Component
     {
         if ($this->table) {
             if (count($this->columns) < 1) {
-                $this->columns = Schema::getColumnListing($this->table);
+                $this->columns = Schema::getColumnListing(explode('tbl_', $this->table)[1]);
                 $fields = [];
                 $labels = [];
+                $this->columns = array_filter($this->columns, fn ($m) => !in_array($m, ['id', 'created_at', 'updated_at']));
+
                 foreach ($this->columns as $key => $value) {
                     $fields[$value] = 'text';
                     $labels[$value] = str_replace('_', ' ', $value);
