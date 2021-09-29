@@ -17,18 +17,19 @@ class UserAuthorization
      */
     public function handle(Request $request, Closure $next)
     {
-        $path = $request->getPathInfo();
-        if ($path == '/login') {
-            return $next($request);
-        }
-
+        $route_name = $request->route()->getName();
         $user = auth()->user();
-        $team = Team::find(1);
-        $permission = explode('/', $path)[1] . ':read';
-        // dd($user->teamPermissions($team));
-        if (!$user->hasTeamPermission($team, $permission)) {
-            return abort(403);
+        $menus = $user->menus;
+        foreach ($menus as $menu) {
+            if ($menu->menu_route == $route_name) {
+                return $next($request);
+            }
+            foreach ($menu->children as $children) {
+                if ($children->menu_route == $route_name) {
+                    return $next($request);
+                }
+            }
         }
-        return $next($request);
+        return abort(403);
     }
 }
