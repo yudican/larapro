@@ -64,6 +64,7 @@ class User extends Authenticatable
         'profile_photo_url',
         'role',
         'menus',
+        'menu_data',
         'menu_id',
     ];
 
@@ -90,5 +91,13 @@ class User extends Authenticatable
     public function getMenusAttribute()
     {
         return $this->role->menus()->with('children')->where('parent_id')->get();
+    }
+
+    public function getMenuDataAttribute()
+    {
+        $role_id = $this->role->id;
+        return $this->role->menus()->where('show_menu', 1)->with('children')->whereHas('roles', function ($query) use ($role_id) {
+            return $query->where('role_id', $role_id);
+        })->where('parent_id')->orderBy('menu_order', 'ASC')->get();
     }
 }
