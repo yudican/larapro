@@ -70,7 +70,7 @@ class CrudGenerator extends Component
     public function generate()
     {
         $field_columns = $this->_getFieldColumns();
-        $controller_name = $this->filename;
+        $controller_name = $this->filename . 'Controller';
         $view_name = str_replace('_', '-', $this->table);
 
         $controllerTemplate = $this->controllerTemplate($field_columns);
