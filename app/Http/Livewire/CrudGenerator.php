@@ -137,7 +137,7 @@ class CrudGenerator extends Component
             ],
             [
                 $this->filename,
-                $this->folder_namespace,
+                $this->folder_namespace ? "\\" . ucfirst($this->folder_namespace) : '',
                 $this->filename,
                 'public $' . $this->table . '_id',
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getTableColumn())),
