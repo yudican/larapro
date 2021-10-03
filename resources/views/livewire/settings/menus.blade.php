@@ -40,6 +40,10 @@
                             <option value="{{$role->id}}">{{$role->role_name}}</option>
                             @endforeach
                         </x-select>
+                        <x-select name="show_menu" label="Show Menu">
+                            <option value="1">Ya</option>
+                            <option value="0">Tidak</option>
+                        </x-select>
                         <div class="form-group">
                             <button class="btn btn-primary pull-right"
                                 wire:click="{{$update_mode ? 'update' : 'store'}}">Save</button>

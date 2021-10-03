@@ -17,12 +17,10 @@ class Menu extends Component
     public $menu_route;
     public $menu_icon;
     public $menu_order;
+    public $show_menu;
     public $parent_id;
     public $role_id = [];
     public $menus = [];
-
-
-
 
     public $form_active = false;
     public $form = true;
@@ -72,7 +70,8 @@ class Menu extends Component
             'menu_route'  => $this->menu_route,
             'menu_icon'  => $this->menu_icon,
             'menu_order'  => $this->_getOrderNumber(),
-            'parent_id'  => $this->parent_id
+            'parent_id'  => $this->parent_id,
+            'show_menu'  => $this->show_menu,
         ];
 
         try {
@@ -108,7 +107,6 @@ class Menu extends Component
             return $this->emit('showAlert', ['msg' => 'Data Berhasil Disimpan']);
         } catch (\Throwable $th) {
             DB::rollback();
-            dd($th->getMessage());
             $this->_reset();
             return $this->emit('showAlertError', ['msg' => 'Data Gagal Disimpan']);
         }
@@ -123,7 +121,8 @@ class Menu extends Component
             'menu_route'  => $this->menu_route,
             'menu_icon'  => $this->menu_icon,
             'menu_order'  => $this->menu_order,
-            'parent_id'  => $this->parent_id
+            'parent_id'  => $this->parent_id,
+            'show_menu'  => $this->show_menu,
         ];
 
         try {
@@ -172,6 +171,7 @@ class Menu extends Component
         $this->menu_icon = $menus->menu_icon;
         $this->menu_order = $menus->menu_order;
         $this->parent_id = $menus->parent_id;
+        $this->show_menu = $menus->show_menu;
         $role_id = array_merge($menus->roles()->pluck('roles.id')->toArray(), ['aaf5ab14-a1cd-46c9-9838-84188cd064b6']);
         $this->role_id = $role_id;
         if ($this->form) {
@@ -210,6 +210,7 @@ class Menu extends Component
         $this->menu_label = null;
         $this->menu_route = null;
         $this->menu_icon = null;
+        $this->show_menu = false;
         $this->menu_order = null;
         $this->role_id = [];
         $this->parent_id = null;
