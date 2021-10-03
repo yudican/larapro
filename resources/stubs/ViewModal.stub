@@ -73,9 +73,14 @@
     </div>
     @push('scripts')
     [assetRichText]
+    [assetMultipleInput]
 
     <script>
          document.addEventListener('livewire:load', function(e) {
+             window.livewire.on('loadForm', (data) => {
+                [richText]
+                [multipleInput]
+            });
             window.livewire.on('showModal', (data) => {
                 $('#form-modal').modal('show')
             });

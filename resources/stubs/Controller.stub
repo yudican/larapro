@@ -2,11 +2,11 @@
 
 namespace App\Http\Livewire\[folderNamespace];
 
-use App\Models\[modelName] as Models[modelName];
+use App\Models\[modelName];
 use Livewire\Component;
 [loadStorage]
 
-class [fileName] extends Component
+class [fileName]Controller extends Component
 {
     [loadFileUpload]
     [tableId];
@@ -19,12 +19,12 @@ class [fileName] extends Component
     public $update_mode = false;
     public $modal = [useModal];
 
-    protected $listeners = ['getDataById', 'getId'];
+    protected $listeners = ['getData[modelName]ById', 'get[modelName]Id'];
 
     public function render()
     {
         return view('livewire.[folderNamespaceLower].[viewName]', [
-            'items' => Models[modelName]::all()
+            'items' => [modelName]::all()
         ]);
     }
 
@@ -34,7 +34,7 @@ class [fileName] extends Component
         [loadFileUploadInsert]
         $data = [[formRequest]];
 
-        Models[modelName]::create($data);
+        [modelName]::create($data);
 
         $this->_reset();
         return $this->emit('showAlert', ['msg' => 'Data Berhasil Disimpan']);
@@ -45,7 +45,7 @@ class [fileName] extends Component
         $this->_validate();
 
         $data = [[formRequestUpdate]];
-        $row = Models[modelName]::find([getTableId]);
+        $row = [modelName]::find([getTableId]);
 
         [loadFileUploadUpdate]
 
@@ -57,7 +57,7 @@ class [fileName] extends Component
 
     public function delete()
     {
-        Models[modelName]::find([getTableId])->delete();
+        [modelName]::find([getTableId])->delete();
 
         $this->_reset();
         return $this->emit('showAlert', ['msg' => 'Data Berhasil Dihapus']);
@@ -72,9 +72,10 @@ class [fileName] extends Component
         return $this->validate($rule);
     }
 
-    public function getDataById($[table_name]_id)
+    public function getData[modelName]ById($[table_name]_id)
     {
-        $[table_name] = Models[modelName]::find($[table_name]_id);
+        $this->_reset();
+        $[table_name] = [modelName]::find($[table_name]_id);
         [getTableId] = $[table_name]->id;
         [getDataById];
         if ($this->form) {
@@ -87,20 +88,22 @@ class [fileName] extends Component
         $this->update_mode = true;
     }
 
-    public function getId($[table_name]_id)
+    public function get[modelName]Id($[table_name]_id)
     {
-        $[table_name] = Models[modelName]::find($[table_name]_id);
+        $[table_name] = [modelName]::find($[table_name]_id);
         [getTableId] = $[table_name]->id;
     }
 
     public function toggleForm($form)
-    {
+    { 
+        $this->_reset();
         $this->form_active = $form;
         $this->emit('loadForm');
     }
 
     public function showModal()
     {
+        $this->_reset();
         $this->emit('showModal');
     }
 

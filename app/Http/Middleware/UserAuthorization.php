@@ -25,8 +25,10 @@ class UserAuthorization
                 return $next($request);
             }
             foreach ($menu->children as $children) {
-                if ($children->menu_route == $route_name) {
-                    return $next($request);
+                foreach ($menu->children()->whereIn('id', $user->menu_id)->get() as $children) {
+                    if ($children->menu_route == $route_name) {
+                        return $next($request);
+                    }
                 }
             }
         }

@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class [fileName] extends Model
 {
-    use Uuid;
+    //use Uuid;
     use HasFactory;
 
-    public $incrementing = false;
+    //public $incrementing = false;
 
     protected $fillable = [[fillable]];
     

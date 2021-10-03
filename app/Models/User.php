@@ -63,7 +63,8 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
         'role',
-        'menus'
+        'menus',
+        'menu_id',
     ];
 
     /**
@@ -79,6 +80,11 @@ class User extends Authenticatable
     public function getRoleAttribute()
     {
         return $this->roles()->first();
+    }
+
+    public function getMenuIdAttribute()
+    {
+        return $this->role->menus()->whereNotNull('parent_id')->pluck('menus.id')->toArray();
     }
 
     public function getMenusAttribute()

@@ -11,7 +11,7 @@ class CrudGenerator extends Component
     public $table;
     public $filename;
     public $modelname;
-    public $folder_namespace = 'Admin';
+    public $folder_namespace = '';
     public $form_type;
 
     public $tables = [];
@@ -20,6 +20,7 @@ class CrudGenerator extends Component
     public $field_column = [];
     public $field_columns = [];
     public $have_richtext = false;
+    public $have_multiple_input = false;
     public $prefix = 'tbl_';
     public function mount()
     {
@@ -38,14 +39,15 @@ class CrudGenerator extends Component
     {
         if ($this->table) {
             if (count($this->columns) < 1) {
-                $this->columns = Schema::getColumnListing(explode('tbl_', $this->table)[1]);
+                $table = $this->prefix ? explode($this->prefix, $this->table)[1] : $this->table;
+                $this->columns = Schema::getColumnListing($table);
                 $fields = [];
                 $labels = [];
                 $this->columns = array_filter($this->columns, fn ($m) => !in_array($m, ['id', 'created_at', 'updated_at']));
 
                 foreach ($this->columns as $key => $value) {
                     $fields[$value] = 'text';
-                    $labels[$value] = str_replace('_', ' ', $value);
+                    $labels[$value] = ucwords(str_replace('_', ' ', $value));
                 }
                 $this->field = [
                     'type' => $fields,
@@ -147,7 +149,7 @@ class CrudGenerator extends Component
                 str_replace('<br>', '', implode(',' . PHP_EOL, $this->_getFormRequest($field_columns, 'insert'))),
                 str_replace('<br>', '', implode(',' . PHP_EOL, $this->_getFormRequest($field_columns, 'update'))),
                 '$this->' . $this->table . '_id',
-                str_replace('<br>', '', implode(',' . PHP_EOL, $this->_makeRules())),
+                str_replace('<br>', '', implode(',' . PHP_EOL, $this->_makeRules($field_columns))),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getDataById($this->table))),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_resetForm())),
                 strtolower($this->folder_namespace),
@@ -192,7 +194,9 @@ class CrudGenerator extends Component
                 '[formInput]',
                 '[label]',
                 '[assetRichText]',
+                '[assetMultipleInput]',
                 '[richText]',
+                '[multipleInput]',
                 '[itemLabel]',
                 '[itemValue]',
                 '[fileName]',
@@ -202,7 +206,9 @@ class CrudGenerator extends Component
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_makeFormInput($field_columns))),
                 str_replace('_', '-', $this->table),
                 $this->have_richtext ? '<script src="{{asset(\'assets/js/plugin/summernote/summernote-bs4.min.js\')}}"></script>' : null,
+                $this->have_multiple_input ? '<script src="{{asset(\'assets/js/plugin/select2/select2.full.min.js\')}}"></script>' : null,
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_getRichText($field_columns))),
+                str_replace('<br>', '', implode('' . PHP_EOL, $this->_getMultipleInput($field_columns))),
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_getItemLabel($field_columns))),
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_getItemValue($field_columns))),
                 str_replace('_', ' ', $this->table),
@@ -260,6 +266,9 @@ class CrudGenerator extends Component
             if (in_array($value['type'], ['richtext'])) {
                 $this->have_richtext = true;
             }
+            if (in_array($value['type'], ['multiple'])) {
+                $this->have_multiple_input = true;
+            }
 
             if (in_array($value['type'], ['textarea'])) {
                 $column_render[] = '<x-textarea type="' . $value['type'] . '" name="' . $key . '" label="' . $value['label'] . '" />';
@@ -281,6 +290,10 @@ class CrudGenerator extends Component
 
             if ($value['type'] == 'select') {
                 $column_render[] = '<x-select name="' . $key . '" label="' . $value['label'] . '" ><option value="">Select ' . $value['label'] . '</option></x-select>';
+            }
+
+            if ($value['type'] == 'multiple') {
+                $column_render[] = '<x-select name="' . $key . '" label="' . $value['label'] . '" multiple ignore id="' . $key . '"><option value="">Select ' . $value['label'] . '</option></x-select>';
             }
 
             if (in_array($value['type'], ['image'])) {
@@ -326,6 +339,25 @@ class CrudGenerator extends Component
                         }
                     }
             });";
+            }
+        }
+        return $column_render;
+    }
+
+    public function _getMultipleInput($field_columns)
+    {
+        $column_render = [];
+        foreach ($field_columns as $key => $value) {
+            if (in_array($value['type'], ['multiple'])) {
+                $column_render[] = "$('#$key').select2({
+                    theme: 'bootstrap,
+                });
+                
+                $('#$key').on('change', function (e) {
+                    let data = $(this).val();
+                    console.log(data)
+                    @this.set('$key', data);
+                });";
             }
         }
         return $column_render;
@@ -412,8 +444,9 @@ class CrudGenerator extends Component
         foreach ($field_columns as $key => $value) {
             if (in_array($value['type'], ['image']) && $type == 'insert') {
                 $form_render[] = '\'' . $key . '\'  => $' . $key . '';
+            } else {
+                $form_render[] = '\'' . $key . '\'  => $this->' . $key . '';
             }
-            $form_render[] = '\'' . $key . '\'  => $this->' . $key . '';
         }
 
         return $form_render;
@@ -425,23 +458,26 @@ class CrudGenerator extends Component
         $column_render = [];
         foreach ($field_columns as $key => $value) {
             if (in_array($value['type'], ['image'])) {
-                $column_render[] = 'Column::callback([\' ' . $key . ' \'], function ($image) {
+                $column_render[] = 'Column::callback([\'' . $key . '\'], function ($image) {
                 return view(\'livewire.components.photo\', [
                     \'image_url\' => asset(\'storage/\' . $image),
                 ]);
-            })->label(__(\'' . $value['type'] . '\')),';
+            })->label(__(\'' . $value['label'] . '\')),';
+            } else {
+                $column_render[] = 'Column::name(\'' . $key . '\')->label(\'' . $value['label'] . '\')->searchable(),';
             }
-            $column_render[] = 'Column::name(\'' . $key . '\')->label(\'' . $value['label'] . '\')->searchable(),';
         }
 
         return $column_render;
     }
 
-    public function _makeRules()
+    public function _makeRules($field_columns)
     {
         $rules = [];
-        foreach ($this->columns as $column) {
-            $rules[] = '\'' . $column . '\'  => \'required\'';
+        foreach ($field_columns as $key => $value) {
+            if (!in_array($value['type'], ['image'])) {
+                $rules[] = '\'' . $key . '\'  => \'required\'';
+            }
         }
 
         return $rules;
@@ -477,7 +513,7 @@ class CrudGenerator extends Component
                     $mergered['type'] = $value[$i];
                 }
                 if ($i == 1) {
-                    $mergered['label'] = $value[$i];
+                    $mergered['label'] = ucwords($value[$i]);
                 }
             }
 
@@ -500,12 +536,13 @@ class CrudGenerator extends Component
         $this->filename = null;
         $this->modelname = null;
         $this->form_type = null;
-        $this->folder_namespace = 'Admin';
+        $this->folder_namespace = '';
 
         $this->columns = [];
         $this->field = [];
         $this->field_column = [];
         $this->field_columns = [];
         $this->have_richtext = false;
+        $this->have_multiple_input = false;
     }
 }

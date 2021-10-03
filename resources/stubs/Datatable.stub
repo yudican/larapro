@@ -38,12 +38,12 @@ class [fileName]Table extends LivewireDatatable
 
     public function getDataById($id)
     {
-        $this->emit('getDataById', $id);
+        $this->emit('getData[fileName]ById', $id);
     }
 
     public function getId($id)
     {
-        $this->emit('getId', $id);
+        $this->emit('get[fileName]Id', $id);
     }
 
     public function refreshTable()

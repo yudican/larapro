@@ -50,7 +50,7 @@
             <div class="logo-header" data-background-color="blue">
 
                 <a href="{{route('dashboard')}}" class="logo">
-                    <img src="{{asset('assets/img/logo-admin.svg')}}" style="height: 40px" alt="navbar brand"
+                    <img src="{{asset('assets/img/logo-admin.svg')}}" style="height: 20px" alt="navbar brand"
                         class="navbar-brand">
                 </a>
                 <button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse"
@@ -128,7 +128,7 @@
                         </div>
                     </div>
                     <ul class="nav nav-primary">
-                        @foreach (Auth::user()->menus as $menu)
+                        @foreach (Auth::user()->menu_data as $menu)
                         @if ($menu->children && $menu->children->count() > 0)
                         <li
                             class="nav-item 
@@ -141,7 +141,8 @@
                             </a>
                             <div class="collapse" id="colapse-{{$menu->id}}">
                                 <ul class="nav nav-collapse">
-                                    @foreach ($menu->children as $children)
+                                    @foreach ($menu->children()->where('show_menu', 1)->whereIn('id',
+                                    Auth::user()->menu_id)->get() as $children)
                                     <li class="{{request()->routeIs($children->menu_route) ? 'active' : ''}}">
                                         <a href="{{route($children->menu_route)}}">
                                             <span>{{$children->menu_label}}</span>
