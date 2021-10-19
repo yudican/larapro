@@ -35,7 +35,7 @@
                         <x-text-field type="text" name="menu_label" label="Menu Name" />
                         <x-text-field type="text" name="menu_route" label="Route Name" />
                         <x-text-field type="text" name="menu_icon" label="Icon Name" />
-                        <x-select name="role_id" id="choices-multiple-remove-button" label="Role" multiple>
+                        <x-select name="role_id" id="choices-multiple-remove-button" label="Role" multiple ignore>
                             @foreach ($roles as $role)
                             <option value="{{$role->id}}">{{$role->role_name}}</option>
                             @endforeach
