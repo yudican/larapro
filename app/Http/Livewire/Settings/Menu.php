@@ -19,7 +19,7 @@ class Menu extends Component
     public $menu_order;
     public $show_menu;
     public $parent_id;
-    public $role_id = [];
+    public $role_id = ['aaf5ab14-a1cd-46c9-9838-84188cd064b6'];
     public $menus = [];
 
     public $form_active = false;
@@ -33,7 +33,7 @@ class Menu extends Component
     {
         return view('livewire.settings.menus', [
             'items' => ModelsMenu::whereNull('parent_id')->orderBy('menu_order', 'ASC')->get(),
-            'roles' => Role::where('role_type', '!=', 'superadmin')->get()
+            'roles' => Role::all()
         ]);
     }
 
@@ -79,7 +79,7 @@ class Menu extends Component
 
             $menu = ModelsMenu::create($data);
 
-            $menu->roles()->sync(array_merge($this->role_id, ['aaf5ab14-a1cd-46c9-9838-84188cd064b6']));
+            $menu->roles()->sync($this->role_id);
 
             if ($this->menu_route != '#') {
                 $permission = Permission::insert([
