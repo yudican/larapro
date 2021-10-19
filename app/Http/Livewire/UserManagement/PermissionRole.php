@@ -23,7 +23,7 @@ class PermissionRole extends Component
     // dd($this->permission_id);
     // dd(Permission::with('roles')->get());
     return view('livewire.usermanagement.permission-role', [
-      'items' => Permission::with('roles')->get()
+      'items' => Permission::with('roles')->orderBy('created_at', 'ASC')->get()
     ]);
   }
 

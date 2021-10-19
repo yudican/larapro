@@ -20,7 +20,7 @@ class Permission extends Component
     public function render()
     {
         return view('livewire.usermanagement.permissions', [
-            'items' => ModelsPermission::all()
+            'items' => ModelsPermission::orderBy('created_at', 'ASC')->get()
         ]);
     }
 

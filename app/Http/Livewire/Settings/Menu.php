@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Settings;
 use App\Models\Menu as ModelsMenu;
 use App\Models\Permission;
 use App\Models\Role;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Ramsey\Uuid\Uuid;
@@ -87,16 +88,22 @@ class Menu extends Component
                         'id' => Uuid::uuid4()->toString(),
                         'permission_value' => $this->menu_route . ':create',
                         'permission_name' => 'Create ' . $this->menu_label,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now()
                     ],
                     [
                         'id' => Uuid::uuid4()->toString(),
                         'permission_value' => $this->menu_route . ':update',
                         'permission_name' => 'Update ' . $this->menu_label,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now()
                     ],
                     [
                         'id' => Uuid::uuid4()->toString(),
                         'permission_value' => $this->menu_route . ':delete',
                         'permission_name' => 'Delete ' . $this->menu_label,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now()
                     ],
                 ]);
             }
