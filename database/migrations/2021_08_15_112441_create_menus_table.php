@@ -21,6 +21,7 @@ class CreateMenusTable extends Migration
             $table->string('menu_route', 30);
             $table->string('menu_icon', 30)->nullable();
             $table->integer('menu_order')->default(0)->nullable();
+            $table->char('show_menu', 1)->default(1)->nullable();
             $table->bigInteger('parent_id')->nullable();
             $table->timestamps();
         });
@@ -76,6 +77,16 @@ class CreateMenusTable extends Migration
                 'menu_route' => 'crud.generator',
                 'menu_icon' => 'fas fa-cogs',
                 'menu_order' => 3,
+                'parent_id' => null,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'menu_label' => 'Role Permission',
+                'menu_route' => 'permission.role',
+                'menu_icon' => 'fas fa-cogs',
+                'menu_order' => 4,
+                'show_menu' => 0,
                 'parent_id' => null,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
