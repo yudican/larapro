@@ -15,7 +15,6 @@ class [fileName]Table extends LivewireDatatable
     public $table_name = '[table_name]';
     public $hide = [];
 
-
     public function builder()
     {
         return [fileName]::query();
@@ -30,7 +29,7 @@ class [fileName]Table extends LivewireDatatable
             Column::callback(['id'], function ($id) {
                 return view('livewire.components.action-button', [
                     'id' => $id,
-                    'segment' => request()->segment(1)
+                    'segment' => $this->params
                 ]);
             })->label(__('Aksi')),
         ];

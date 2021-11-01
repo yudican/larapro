@@ -7,6 +7,7 @@
                         <a href="{{route('dashboard')}}">
                             <span><i class="fas fa-arrow-left mr-3"></i>[fileName]</span>
                         </a>
+                        @if (auth()->user()->hasTeamPermission($curteam, request()->route()->getName().':create'))
                         <div class="pull-right">
                         @if ($form_active)
                         <button class="btn btn-danger btn-sm" wire:click="toggleForm(false)"><i class="fas fa-times"></i> Cancel</button>
@@ -15,6 +16,7 @@
                             New</button>
                         @endif
                         </div>
+                        @endif
                     </h4>
                 </div>
             </div>
@@ -32,7 +34,7 @@
                     </div>
                 </div>
             @else
-                <livewire:table.[datatableName]-table />
+                <livewire:table.[datatableName]-table params="{{request()->route()->getName()}}" />
             @endif
 
         </div>

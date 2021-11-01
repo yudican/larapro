@@ -15,7 +15,7 @@ class PermissionRole extends Component
     $this->role_id = $role_id;
     $permission_id = Permission::with('roles')->whereHas('roles', function ($query) use ($role_id) {
       return $query->where('roles.id', $role_id);
-    })->pluck('permissions.id')->toArray();
+    })->orderBy('created_at', 'ASC')->pluck('permissions.id')->toArray();
     $this->permission_id = $permission_id;
   }
   public function render()
