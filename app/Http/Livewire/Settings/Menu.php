@@ -18,7 +18,7 @@ class Menu extends Component
     public $menu_route;
     public $menu_icon;
     public $menu_order;
-    public $show_menu;
+    public $show_menu = 1;
     public $parent_id;
     public $role_id = ['aaf5ab14-a1cd-46c9-9838-84188cd064b6'];
     public $menus = [];
@@ -79,35 +79,35 @@ class Menu extends Component
             DB::beginTransaction();
 
             $menu = ModelsMenu::create($data);
-
             $menu->roles()->sync($this->role_id);
 
-            if ($this->menu_route != '#') {
-                $permission = Permission::insert([
-                    [
-                        'id' => Uuid::uuid4()->toString(),
-                        'permission_value' => $this->menu_route . ':create',
-                        'permission_name' => 'Create ' . $this->menu_label,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now()
-                    ],
-                    [
-                        'id' => Uuid::uuid4()->toString(),
-                        'permission_value' => $this->menu_route . ':update',
-                        'permission_name' => 'Update ' . $this->menu_label,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now()
-                    ],
-                    [
-                        'id' => Uuid::uuid4()->toString(),
-                        'permission_value' => $this->menu_route . ':delete',
-                        'permission_name' => 'Delete ' . $this->menu_label,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now()
-                    ],
-                ]);
+            if ($this->show_menu > 0) {
+                if ($this->menu_route != '#') {
+                    $permission = Permission::insert([
+                        [
+                            'id' => Uuid::uuid4()->toString(),
+                            'permission_value' => $this->menu_route . ':create',
+                            'permission_name' => 'Create ' . $this->menu_label,
+                            'created_at' => Carbon::now(),
+                            'updated_at' => Carbon::now()
+                        ],
+                        [
+                            'id' => Uuid::uuid4()->toString(),
+                            'permission_value' => $this->menu_route . ':update',
+                            'permission_name' => 'Update ' . $this->menu_label,
+                            'created_at' => Carbon::now(),
+                            'updated_at' => Carbon::now()
+                        ],
+                        [
+                            'id' => Uuid::uuid4()->toString(),
+                            'permission_value' => $this->menu_route . ':delete',
+                            'permission_name' => 'Delete ' . $this->menu_label,
+                            'created_at' => Carbon::now(),
+                            'updated_at' => Carbon::now()
+                        ],
+                    ]);
+                }
             }
-
 
             $this->_reset();
             DB::commit();

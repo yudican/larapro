@@ -14,12 +14,19 @@ class [fileName]Controller extends Component
     [tableFileColumn]
    
 
+    public $route_name = false;
+
     public $form_active = false;
     public $form = [useForm];
     public $update_mode = false;
     public $modal = [useModal];
 
     protected $listeners = ['getData[modelName]ById', 'get[modelName]Id'];
+
+    public function mount()
+    {
+        $this->route_name = request()->route()->getName();
+    }
 
     public function render()
     {
