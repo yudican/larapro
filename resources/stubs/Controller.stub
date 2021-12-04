@@ -14,7 +14,7 @@ class [fileName]Controller extends Component
     [tableFileColumn]
    
 
-    public $route_name = false;
+    public $route_name = null;
 
     public $form_active = false;
     public $form = [useForm];
@@ -82,8 +82,8 @@ class [fileName]Controller extends Component
     public function getData[modelName]ById($[table_name]_id)
     {
         $this->_reset();
-        $[table_name] = [modelName]::find($[table_name]_id);
-        [getTableId] = $[table_name]->id;
+        $row = [modelName]::find($[table_name]_id);
+        [getTableId] = $row->id;
         [getDataById];
         if ($this->form) {
             $this->form_active = true;
@@ -97,8 +97,8 @@ class [fileName]Controller extends Component
 
     public function get[modelName]Id($[table_name]_id)
     {
-        $[table_name] = [modelName]::find($[table_name]_id);
-        [getTableId] = $[table_name]->id;
+        $row = [modelName]::find($[table_name]_id);
+        [getTableId] = $row->id;
     }
 
     public function toggleForm($form)

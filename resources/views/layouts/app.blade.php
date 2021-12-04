@@ -132,7 +132,7 @@
                         @if ($menu->children && $menu->children->count() > 0)
                         <li
                             class="nav-item 
-                        @foreach ($menu->children as $children) {{request()->routeIs($children->menu_route) ? 'active' : ''}} @endforeach ">
+                        @foreach ($menu->children as $children) {{request()->routeIs($children->menu_route) ? 'active show' : ''}} @endforeach ">
                             <a data-toggle="collapse" href="#colapse-{{$menu->id}}" class="collapsed"
                                 aria-expanded="false">
                                 <i class="{{$menu->menu_icon}}"></i>

@@ -300,6 +300,9 @@ class CrudGenerator extends Component
                 $column_render[] = '<x-input-photo foto="{{$' . $key . '}}" path="{{optional($' . $key . '_path)->temporaryUrl()}}"
                             name="' . $key . '_path"  label="' . $value['label'] . '" />';
             }
+            if (in_array($value['type'], ['file'])) {
+                $column_render[] = '<x-input-file file="{{$' . $key . '}}" path="{{optional($' . $key . '_path)->getClientOriginalName()}}" name="' . $key . '_path"  label="' . $value['label'] . '" />';
+            }
         }
 
         return $column_render;
@@ -377,7 +380,7 @@ class CrudGenerator extends Component
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
-            if (in_array($value['type'], ['image'])) {
+            if (in_array($value['type'], ['image', 'file'])) {
                 $column_render[] = 'public $' . $key . '_path;';
             }
         }
@@ -389,9 +392,11 @@ class CrudGenerator extends Component
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
-            if (in_array($value['type'], ['image'])) {
-                $column_render[] = 'use Illuminate\Support\Facades\Storage';
-                $column_render[] = 'use Livewire\WithFileUploads;';
+            if ($key < 1) {
+                if (in_array($value['type'], ['image', 'file'])) {
+                    $column_render[] = 'use Illuminate\Support\Facades\Storage';
+                    $column_render[] = 'use Livewire\WithFileUploads;';
+                }
             }
         }
         return $column_render;
@@ -400,8 +405,10 @@ class CrudGenerator extends Component
     public function _getLoadFileUpload($field_columns)
     {
         foreach ($field_columns as $key => $value) {
-            if (in_array($value['type'], ['image'])) {
-                return 'use WithFileUploads;';
+            if ($key < 1) {
+                if (in_array($value['type'], ['image', 'file'])) {
+                    return 'use WithFileUploads;';
+                }
             }
         }
         return '';
@@ -411,7 +418,7 @@ class CrudGenerator extends Component
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
-            if (in_array($value['type'], ['image'])) {
+            if (in_array($value['type'], ['image', 'file'])) {
                 $column_render[] = '$' . $key . ' = $this->' . $key . '_path->store(\'upload\', \'public\');';
             }
         }
@@ -423,7 +430,7 @@ class CrudGenerator extends Component
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
-            if (in_array($value['type'], ['image'])) {
+            if (in_array($value['type'], ['image', 'file'])) {
                 $column_render[] = '
                     if ($this->' . $key . '_path) {
                         $' . $key . ' = $this->' . $key . '_path->store(\'upload\', \'public\');
@@ -442,10 +449,8 @@ class CrudGenerator extends Component
     {
         $form_render = [];
         foreach ($field_columns as $key => $value) {
-            if (in_array($value['type'], ['image']) && $type == 'insert') {
+            if (in_array($value['type'], ['image', 'file']) && $type == 'insert') {
                 $form_render[] = '\'' . $key . '\'  => $' . $key . '';
-            } else {
-                $form_render[] = '\'' . $key . '\'  => $this->' . $key . '';
             }
         }
 
@@ -463,6 +468,10 @@ class CrudGenerator extends Component
                     \'image_url\' => asset(\'storage/\' . $image),
                 ]);
             })->label(__(\'' . $value['label'] . '\')),';
+            } else if (in_array($value['type'], ['file'])) {
+                $column_render[] = 'Column::callback([\'' . $key . '\'], function ($file) {
+                return \'<a href="{{asset(\'storage/\' . $file)}}">show file</a>\';
+            })->label(__(\'' . $value['label'] . '\')),';
             } else {
                 $column_render[] = 'Column::name(\'' . $key . '\')->label(\'' . $value['label'] . '\')->searchable(),';
             }
@@ -475,8 +484,8 @@ class CrudGenerator extends Component
     {
         $rules = [];
         foreach ($field_columns as $key => $value) {
-            if (!in_array($value['type'], ['image'])) {
-                $rules[] = '\'' . $key . '\'  => \'required\'';
+            if (!in_array($value['type'], ['image', 'file'])) {
+                $rules[] = '\'' . $key . '_path' . '\'  => \'required\'';
             }
         }
 
