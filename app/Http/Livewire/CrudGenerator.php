@@ -151,7 +151,7 @@ class CrudGenerator extends Component
                 '$this->' . $this->table . '_id',
                 str_replace('<br>', '', implode(',' . PHP_EOL, $this->_makeRules($field_columns))),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getDataById($this->table))),
-                str_replace('<br>', '', implode(';' . PHP_EOL, $this->_resetForm())),
+                str_replace('<br>', '', implode(';' . PHP_EOL, $this->_resetForm($field_columns))),
                 strtolower($this->folder_namespace),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getLoadStorage($field_columns))),
                 $this->_getLoadFileUpload($field_columns),
@@ -383,6 +383,7 @@ class CrudGenerator extends Component
             if (in_array($value['type'], ['image', 'file'])) {
                 $column_render[] = 'public $' . $key . '_path;';
             }
+            $column_render[] = 'public $' . $key;
         }
 
         return $column_render;
@@ -451,6 +452,8 @@ class CrudGenerator extends Component
         foreach ($field_columns as $key => $value) {
             if (in_array($value['type'], ['image', 'file']) && $type == 'insert') {
                 $form_render[] = '\'' . $key . '\'  => $' . $key . '';
+            } else {
+                $form_render[] = '\'' . $key . '\'  => $this->' . $key . '';
             }
         }
 
@@ -485,6 +488,8 @@ class CrudGenerator extends Component
         $rules = [];
         foreach ($field_columns as $key => $value) {
             if (!in_array($value['type'], ['image', 'file'])) {
+                $rules[] = '\'' . $key . '\'  => \'required\'';
+            } else {
                 $rules[] = '\'' . $key . '_path' . '\'  => \'required\'';
             }
         }
@@ -496,17 +501,23 @@ class CrudGenerator extends Component
     {
         $rules = [];
         foreach ($this->columns as $column) {
-            $rules[] = '$this->' . $column . ' = $' . $table_name . '->' . $column . '';
+
+            $rules[] = '$this->' . $column . ' = $row->' . $column . '';
         }
 
         return $rules;
     }
 
-    public function _resetForm()
+    public function _resetForm($field_columns)
     {
         $reset_form = [];
-        foreach ($this->columns as $column) {
-            $reset_form[] = '$this->' . $column . ' = null';
+
+        foreach ($field_columns as $key => $value) {
+            if (!in_array($value['type'], ['image', 'file'])) {
+                $reset_form[] = '$this->' . $key . ' = null';
+            } else {
+                $reset_form[] = '$this->' . $key . '_path' . ' = null';
+            }
         }
 
         return $reset_form;
