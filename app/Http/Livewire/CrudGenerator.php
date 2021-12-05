@@ -383,7 +383,6 @@ class CrudGenerator extends Component
             if (in_array($value['type'], ['image', 'file'])) {
                 $column_render[] = 'public $' . $key . '_path;';
             }
-            $column_render[] = 'public $' . $key;
         }
 
         return $column_render;
