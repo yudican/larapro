@@ -32,6 +32,7 @@ class CreateMenusTable extends Migration
                 'menu_route' => 'dashboard',
                 'menu_icon' => 'fas fa-home',
                 'menu_order' => 1,
+                'show_menu' => 1,
                 'parent_id' => null,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
@@ -41,6 +42,7 @@ class CreateMenusTable extends Migration
                 'menu_route' => '#',
                 'menu_icon' => 'fas fa-key',
                 'menu_order' => 2,
+                'show_menu' => 1,
                 'parent_id' => null,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
@@ -50,6 +52,7 @@ class CreateMenusTable extends Migration
                 'menu_route' => 'menu',
                 'menu_icon' => null,
                 'menu_order' => 1,
+                'show_menu' => 1,
                 'parent_id' => 2,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
@@ -59,6 +62,7 @@ class CreateMenusTable extends Migration
                 'menu_route' => 'role',
                 'menu_icon' => null,
                 'menu_order' => 2,
+                'show_menu' => 1,
                 'parent_id' => 2,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
@@ -68,6 +72,7 @@ class CreateMenusTable extends Migration
                 'menu_route' => 'permission',
                 'menu_icon' => null,
                 'menu_order' => 3,
+                'show_menu' => 1,
                 'parent_id' => 2,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
@@ -77,6 +82,7 @@ class CreateMenusTable extends Migration
                 'menu_route' => 'crud.generator',
                 'menu_icon' => 'fas fa-cogs',
                 'menu_order' => 3,
+                'show_menu' => 1,
                 'parent_id' => null,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()

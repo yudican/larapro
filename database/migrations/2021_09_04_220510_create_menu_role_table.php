@@ -65,6 +65,10 @@ class CreateMenuRoleTable extends Migration
                 'menu_id' => 1,
                 'role_id' => '0feb7d3a-90c0-42b9-be3f-63757088cb9a',
             ],
+            [
+                'menu_id' => 7,
+                'role_id' => 'aaf5ab14-a1cd-46c9-9838-84188cd064b6',
+            ],
         ]);
     }
 
