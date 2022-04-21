@@ -29,7 +29,16 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "exclude-from-classmap":[
+            "vendor/livewire/livewire/src/Controllers/FilePreviewHandler.php",
+            "vendor/livewire/livewire/src/Controllers/FileUploadHandler.php"
+        ],
+        "files": [
+            "app/helpers.php",
+            "app/overrides/livewire/FilePreviewHandler.php",
+            "app/overrides/livewire/FileUploadHandler.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

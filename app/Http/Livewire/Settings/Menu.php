@@ -83,29 +83,19 @@ class Menu extends Component
 
             if ($this->show_menu > 0) {
                 if ($this->menu_route != '#') {
-                    $permission = Permission::insert([
-                        [
+                    $permissionId = [];
+
+                    foreach (permissionLists() as $key => $value) {
+                        $permissions = Permission::create([
                             'id' => Uuid::uuid4()->toString(),
-                            'permission_value' => $this->menu_route . ':create',
-                            'permission_name' => 'Create ' . $this->menu_label,
+                            'permission_value' => $this->menu_route . ':' . $key,
+                            'permission_name' => $value . ' ' . $this->menu_label,
                             'created_at' => Carbon::now(),
                             'updated_at' => Carbon::now()
-                        ],
-                        [
-                            'id' => Uuid::uuid4()->toString(),
-                            'permission_value' => $this->menu_route . ':update',
-                            'permission_name' => 'Update ' . $this->menu_label,
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now()
-                        ],
-                        [
-                            'id' => Uuid::uuid4()->toString(),
-                            'permission_value' => $this->menu_route . ':delete',
-                            'permission_name' => 'Delete ' . $this->menu_label,
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now()
-                        ],
-                    ]);
+                        ]);
+                        $permissionId[] = $permissions->id;
+                    }
+                    $menu->roles()->permissions()->attach($permissionId);
                 }
             }
 
@@ -140,6 +130,28 @@ class Menu extends Component
 
             $menu->roles()->sync($this->role_id);
 
+            if ($this->show_menu > 0) {
+                if ($this->menu_route != '#') {
+                    $permissionId = [];
+
+                    foreach (permissionLists() as $key => $value) {
+                        $permission = Permission::where('permission_value', $this->menu_route . ':' . $key)->first();
+                        if ($permission) {
+                            $permissionId[] = $permission->id;
+                        } else {
+                            $permissions = Permission::create([
+                                'id' => Uuid::uuid4()->toString(),
+                                'permission_value' => $this->menu_route . ':' . $key,
+                                'permission_name' => $value . ' ' . $this->menu_label,
+                                'created_at' => Carbon::now(),
+                                'updated_at' => Carbon::now()
+                            ]);
+                            $permissionId[] = $permissions->id;
+                        }
+                    }
+                    $menu->roles()->permissions()->sync($permissionId);
+                }
+            }
             $this->_reset();
             DB::commit();
             return $this->emit('showAlert', ['msg' => 'Data Berhasil Diupdate']);

@@ -127,6 +127,7 @@ class CrudGenerator extends Component
                 '[formRequestUpdate]',
                 '[getTableId]',
                 '[makeRules]',
+                '[makeRulesFile]',
                 '[getDataById]',
                 '[resetForm]',
                 '[folderNamespaceLower]',
@@ -150,6 +151,7 @@ class CrudGenerator extends Component
                 str_replace('<br>', '', implode(',' . PHP_EOL, $this->_getFormRequest($field_columns, 'update'))),
                 '$this->' . $this->table . '_id',
                 str_replace('<br>', '', implode(',' . PHP_EOL, $this->_makeRules($field_columns))),
+                $this->_makeRulesFile($field_columns),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getDataById($this->table))),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_resetForm($field_columns))),
                 strtolower($this->folder_namespace),
@@ -391,8 +393,9 @@ class CrudGenerator extends Component
     public function _getLoadStorage($field_columns)
     {
         $column_render = [];
+        $no = 0;
         foreach ($field_columns as $key => $value) {
-            if ($key < 1) {
+            if ($no < 1) {
                 if (in_array($value['type'], ['image', 'file'])) {
                     $column_render[] = 'use Illuminate\Support\Facades\Storage';
                     $column_render[] = 'use Livewire\WithFileUploads;';
@@ -404,8 +407,9 @@ class CrudGenerator extends Component
 
     public function _getLoadFileUpload($field_columns)
     {
+        $no = 0;
         foreach ($field_columns as $key => $value) {
-            if ($key < 1) {
+            if ($no < 1) {
                 if (in_array($value['type'], ['image', 'file'])) {
                     return 'use WithFileUploads;';
                 }
@@ -462,7 +466,7 @@ class CrudGenerator extends Component
 
     public function _getDatatableColumn($field_columns)
     {
-        $column_render = [];
+        $column_render = ["Column::name('id')->label('No.'),"];
         foreach ($field_columns as $key => $value) {
             if (in_array($value['type'], ['image'])) {
                 $column_render[] = 'Column::callback([\'' . $key . '\'], function ($image) {
@@ -488,12 +492,22 @@ class CrudGenerator extends Component
         foreach ($field_columns as $key => $value) {
             if (!in_array($value['type'], ['image', 'file'])) {
                 $rules[] = '\'' . $key . '\'  => \'required\'';
-            } else {
-                $rules[] = '\'' . $key . '_path' . '\'  => \'required\'';
             }
         }
 
         return $rules;
+    }
+    public function _makeRulesFile($field_columns)
+    {
+        $rule = '';
+        foreach ($field_columns as $key => $value) {
+            if (in_array($value['type'], ['image', 'file'])) {
+                $path = '$rule[\'' . $key . '_path' . '\'] = \'required\';';
+                $rule = 'if(!$this->update_mode){' . $path . '}';
+            }
+        }
+
+        return $rule;
     }
 
     public function _getDataById($table_name)
