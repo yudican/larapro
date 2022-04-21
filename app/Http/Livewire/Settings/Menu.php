@@ -239,9 +239,9 @@ class Menu extends Component
         $this->menu_label = null;
         $this->menu_route = null;
         $this->menu_icon = null;
-        $this->show_menu = false;
+        $this->show_menu = 1;
         $this->menu_order = null;
-        $this->role_id = [];
+        $this->role_id = ['aaf5ab14-a1cd-46c9-9838-84188cd064b6'];
         $this->parent_id = null;
         $this->form = true;
         $this->form_active = false;
