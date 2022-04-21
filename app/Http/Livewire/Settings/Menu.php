@@ -95,7 +95,7 @@ class Menu extends Component
                         ]);
                         $permissionId[] = $permissions->id;
                     }
-                    $menu->roles()->permissions()->attach($permissionId);
+                    $permissions->roles()->attach($this->role_id);
                 }
             }
 
@@ -133,7 +133,6 @@ class Menu extends Component
             if ($this->show_menu > 0) {
                 if ($this->menu_route != '#') {
                     $permissionId = [];
-
                     foreach (permissionLists() as $key => $value) {
                         $permission = Permission::where('permission_value', $this->menu_route . ':' . $key)->first();
                         if ($permission) {
@@ -148,8 +147,15 @@ class Menu extends Component
                             ]);
                             $permissionId[] = $permissions->id;
                         }
+                        $permissions->roles()->sync($this->role_id);
                     }
-                    $menu->roles()->permissions()->sync($permissionId);
+                }
+            } else {
+                if ($this->menu_route != '#') {
+                    $permissionId = [];
+                    foreach (permissionLists() as $key => $value) {
+                        Permission::where('permission_value', $this->menu_route . ':' . $key)->delete();
+                    }
                 }
             }
             $this->_reset();
@@ -157,7 +163,6 @@ class Menu extends Component
             return $this->emit('showAlert', ['msg' => 'Data Berhasil Diupdate']);
         } catch (\Throwable $th) {
             DB::rollback();
-
             $this->_reset();
             return $this->emit('showAlertError', ['msg' => 'Data Gagal Diupdate']);
         }
@@ -166,7 +171,9 @@ class Menu extends Component
     public function delete()
     {
         ModelsMenu::find($this->menus_id)->delete();
-
+        foreach (permissionLists() as $key => $value) {
+            Permission::where('permission_value', $this->menu_route . ':' . $key)->delete();
+        }
         $this->_reset();
         return $this->emit('showAlert', ['msg' => 'Data Berhasil Dihapus']);
     }
@@ -207,6 +214,9 @@ class Menu extends Component
     {
         $menus = ModelsMenu::find($menus_id);
         $this->menus_id = $menus->id;
+        $this->menu_route = $menus->menu_route;
+        $role_id = array_merge($menus->roles()->pluck('roles.id')->toArray(), ['aaf5ab14-a1cd-46c9-9838-84188cd064b6']);
+        $this->role_id = $role_id;
     }
 
     public function toggleForm($form)
