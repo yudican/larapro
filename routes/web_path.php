@@ -9,6 +9,16 @@ use App\Http\Livewire\UserManagement\PermissionRole;
 use App\Http\Livewire\UserManagement\Role;
 use App\Http\Livewire\UserManagement\User;
 use Illuminate\Support\Facades\Route;
+use App\Http\Livewire\AttributeController;
+// [route_export_path]
+
+
+
+
+
+
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -22,25 +32,36 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return redirect('login');
+  return redirect('login');
 });
-
 
 Route::post('login', [AuthController::class, 'login'])->name('admin.login');
 Route::group(['middleware' => ['auth:sanctum', 'verified', 'user.authorization']], function () {
-    // Crud Generator Route
-    Route::get('/crud-generator', CrudGenerator::class)->name('crud.generator');
+  // Crud Generator Route
+  Route::get('/crud-generator', CrudGenerator::class)->name('crud.generator');
 
-    // user management
-    Route::get('/permission', Permission::class)->name('permission');
-    Route::get('/permission-role/{role_id}', PermissionRole::class)->name('permission.role');
-    Route::get('/role', Role::class)->name('role');
-    Route::get('/user', User::class)->name('user');
-    Route::get('/menu', Menu::class)->name('menu');
+  // user management
+  Route::get('/permission', Permission::class)->name('permission');
+  Route::get('/permission-role/{role_id}', PermissionRole::class)->name('permission.role');
+  Route::get('/role', Role::class)->name('role');
+  Route::get('/user', User::class)->name('user');
+  Route::get('/menu', Menu::class)->name('menu');
 
-    // App Route
-    Route::get('/dashboard', Dashboard::class)->name('dashboard');
+  // App Route
+  Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
-    // Master data
-    // [route_path]
+  // Master data
+
+
+  Route::get('/dashboarde', Dashboard::class)->name('dashboard');
+
+
+
+
+
+
+  Route::get('/attributes', AttributeController::class)->name('attributes');
+  // [route_path]
+
+
 });

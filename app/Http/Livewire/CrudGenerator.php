@@ -11,7 +11,7 @@ class CrudGenerator extends Component
     public $table;
     public $filename;
     public $modelname;
-    public $folder_namespace = '';
+    public $folder_namespace = null;
     public $form_type;
 
     public $tables = [];
@@ -72,6 +72,7 @@ class CrudGenerator extends Component
         $field_columns = $this->_getFieldColumns();
         $controller_name = $this->filename . 'Controller';
         $view_name = str_replace('_', '-', $this->table);
+        $view_name = str_replace('tbl-', '', $view_name);
 
         $controllerTemplate = $this->controllerTemplate($field_columns);
         $viewTemplate = $this->viewTemplate($field_columns);
@@ -79,38 +80,69 @@ class CrudGenerator extends Component
         $datatableTemplate = $this->viewDatatableTemplate($field_columns);
 
         $folder_namespace = $this->folder_namespace;
-        $folder_namespace_lowertext = strtolower($this->folder_namespace);
+        $folder_namespace_lowertext = '';
+        if ($folder_namespace) {
+            $folder_namespace_lowertext = strtolower($this->folder_namespace);
+        }
 
-        if (!is_dir(app_path("/Http/Livewire/" . $folder_namespace))) {
-            mkdir(app_path("/Http/Livewire/" . $folder_namespace));
+        if ($folder_namespace) {
+            if (!is_dir(app_path("/Http/Livewire/" . $folder_namespace))) {
+                mkdir(app_path("/Http/Livewire/" . $folder_namespace));
+            }
         }
 
         if (!is_dir(app_path("/Http/Livewire/Table"))) {
             mkdir(app_path("/Http/Livewire/Table"));
         }
 
-        if (!is_dir(resource_path("/views/livewire/" . strtolower($this->folder_namespace)))) {
-            mkdir(resource_path("/views/livewire/" . strtolower($this->folder_namespace)));
-        }
+        if ($folder_namespace) {
+            if (!is_dir(resource_path("/views/livewire/" . strtolower($this->folder_namespace)))) {
+                mkdir(resource_path("/views/livewire/" . strtolower($this->folder_namespace)));
+            }
 
-        file_put_contents(app_path("/Http/Livewire/$folder_namespace/{$controller_name}.php"), $controllerTemplate);
-        if ($this->form_type == 'modal') {
-            file_put_contents(resource_path("/views/livewire/$folder_namespace_lowertext/{$view_name}.blade.php"), $viewTemplate);
-        }
+            file_put_contents(app_path("/Http/Livewire/$folder_namespace/{$controller_name}.php"), $controllerTemplate);
+            if ($this->form_type == 'modal') {
+                file_put_contents(resource_path("/views/livewire/$folder_namespace_lowertext/{$view_name}.blade.php"), $viewTemplate);
+            }
 
-        if ($this->form_type == 'form') {
-            file_put_contents(resource_path("/views/livewire/$folder_namespace_lowertext/{$view_name}.blade.php"), $viewTemplate);
+            if ($this->form_type == 'form') {
+                file_put_contents(resource_path("/views/livewire/$folder_namespace_lowertext/{$view_name}.blade.php"), $viewTemplate);
+            }
+        } else {
+            file_put_contents(app_path("/Http/Livewire/{$controller_name}.php"), $controllerTemplate);
+            if ($this->form_type == 'modal') {
+                file_put_contents(resource_path("/views/livewire/{$view_name}.blade.php"), $viewTemplate);
+            }
+
+            if ($this->form_type == 'form') {
+                file_put_contents(resource_path("/views/livewire/{$view_name}.blade.php"), $viewTemplate);
+            }
         }
 
         file_put_contents(app_path("/Models/{$this->filename}.php"), $modelTemplate);
         file_put_contents(app_path("/Http/Livewire/Table/{$this->filename}Table.php"), $datatableTemplate);
 
+        // route path
+        $this->generateRouteFile($controller_name, $view_name, $folder_namespace);
+
         $this->_reset();
         return $this->emit('showAlert', ['msg' => 'CRUD Berhasil Dibuat']);
     }
 
-    public function controllerTemplate($field_columns)
+    private function controllerTemplate($field_columns)
     {
+        $view_name = str_replace('_', '-', $this->table);
+        $view_name = str_replace('tbl-', '', $view_name);
+        $last_character = substr($view_name, -1);
+        $table_name = str_replace('tbl_', '', $this->table);
+        if ($last_character == 's') {
+            $view_name = substr($view_name, 0, -1);
+        }
+
+        $last_character_table = substr($table_name, -1);
+        if ($last_character_table == 's') {
+            $table_name = substr($table_name, 0, -1);
+        }
         $controllerTemplate = str_replace(
             [
                 '[modelName]',
@@ -140,21 +172,21 @@ class CrudGenerator extends Component
                 $this->filename,
                 $this->folder_namespace ? "\\" . ucfirst($this->folder_namespace) : '',
                 $this->filename,
-                'public $' . $this->table . '_id',
+                'public $' . $table_name . '_id',
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getTableColumn())),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getFileTableColumn($field_columns))),
-                $this->table,
-                str_replace('_', '-', $this->table),
+                $table_name,
+                $view_name,
                 $this->form_type == 'form' ? 'true' : 'false',
                 $this->form_type == 'modal' ? 'true' : 'false',
                 str_replace('<br>', '', implode(',' . PHP_EOL, $this->_getFormRequest($field_columns, 'insert'))),
                 str_replace('<br>', '', implode(',' . PHP_EOL, $this->_getFormRequest($field_columns, 'update'))),
-                '$this->' . $this->table . '_id',
+                '$this->' . $table_name . '_id',
                 str_replace('<br>', '', implode(',' . PHP_EOL, $this->_makeRules($field_columns))),
                 $this->_makeRulesFile($field_columns),
-                str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getDataById($this->table))),
+                str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getDataById($table_name))),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_resetForm($field_columns))),
-                strtolower($this->folder_namespace),
+                strtolower($this->folder_namespace ? $this->folder_namespace . '.' : ''),
                 str_replace('<br>', '', implode(';' . PHP_EOL, $this->_getLoadStorage($field_columns))),
                 $this->_getLoadFileUpload($field_columns),
                 str_replace('<br>', '', implode('' . PHP_EOL, $this->_getLoadFileUploadInsert($field_columns))),
@@ -166,7 +198,7 @@ class CrudGenerator extends Component
         return $controllerTemplate;
     }
 
-    public function viewDatatableTemplate($field_columns)
+    private function viewDatatableTemplate($field_columns)
     {
         $datatableTemplate = str_replace(
             [
@@ -186,7 +218,7 @@ class CrudGenerator extends Component
     }
 
 
-    public function viewTemplate($field_columns)
+    private function viewTemplate($field_columns)
     {
         $pieces = preg_split('/(?=[A-Z])/', $this->filename);
         $result = array_diff($pieces, ['']);
@@ -222,7 +254,7 @@ class CrudGenerator extends Component
         return $viewTemplate;
     }
 
-    public function modelTemplate($field_columns)
+    private function modelTemplate($field_columns)
     {
         $modelTemplate = str_replace(
             [
@@ -241,7 +273,7 @@ class CrudGenerator extends Component
         return $modelTemplate;
     }
 
-    public function _getFillable($field_columns)
+    private function _getFillable($field_columns)
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
@@ -250,7 +282,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _getDates($field_columns)
+    private function _getDates($field_columns)
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
@@ -261,7 +293,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _makeFormInput($field_columns)
+    private function _makeFormInput($field_columns)
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
@@ -310,7 +342,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _getItemLabel($field_columns)
+    private function _getItemLabel($field_columns)
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
@@ -319,7 +351,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _getItemValue($field_columns)
+    private function _getItemValue($field_columns)
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
@@ -328,7 +360,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _getRichText($field_columns)
+    private function _getRichText($field_columns)
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
@@ -349,7 +381,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _getMultipleInput($field_columns)
+    private function _getMultipleInput($field_columns)
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
@@ -368,7 +400,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _getTableColumn()
+    private function _getTableColumn()
     {
         $column_render = [];
         foreach ($this->columns as $column) {
@@ -378,7 +410,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _getFileTableColumn($field_columns)
+    private function _getFileTableColumn($field_columns)
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
@@ -390,7 +422,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _getLoadStorage($field_columns)
+    private function _getLoadStorage($field_columns)
     {
         $column_render = [];
         $no = 0;
@@ -405,7 +437,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _getLoadFileUpload($field_columns)
+    private function _getLoadFileUpload($field_columns)
     {
         $no = 0;
         foreach ($field_columns as $key => $value) {
@@ -418,7 +450,7 @@ class CrudGenerator extends Component
         return '';
     }
 
-    public function _getLoadFileUploadInsert($field_columns)
+    private function _getLoadFileUploadInsert($field_columns)
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
@@ -430,7 +462,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _getLoadFileUploadUpdate($field_columns)
+    private function _getLoadFileUploadUpdate($field_columns)
     {
         $column_render = [];
         foreach ($field_columns as $key => $value) {
@@ -449,7 +481,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _getFormRequest($field_columns, $type)
+    private function _getFormRequest($field_columns, $type)
     {
         $form_render = [];
         foreach ($field_columns as $key => $value) {
@@ -464,7 +496,7 @@ class CrudGenerator extends Component
     }
 
 
-    public function _getDatatableColumn($field_columns)
+    private function _getDatatableColumn($field_columns)
     {
         $column_render = ["Column::name('id')->label('No.'),"];
         foreach ($field_columns as $key => $value) {
@@ -486,7 +518,7 @@ class CrudGenerator extends Component
         return $column_render;
     }
 
-    public function _makeRules($field_columns)
+    private function _makeRules($field_columns)
     {
         $rules = [];
         foreach ($field_columns as $key => $value) {
@@ -497,7 +529,7 @@ class CrudGenerator extends Component
 
         return $rules;
     }
-    public function _makeRulesFile($field_columns)
+    private function _makeRulesFile($field_columns)
     {
         $rule = '';
         foreach ($field_columns as $key => $value) {
@@ -510,7 +542,7 @@ class CrudGenerator extends Component
         return $rule;
     }
 
-    public function _getDataById($table_name)
+    private function _getDataById($table_name)
     {
         $rules = [];
         foreach ($this->columns as $column) {
@@ -521,7 +553,7 @@ class CrudGenerator extends Component
         return $rules;
     }
 
-    public function _resetForm($field_columns)
+    private function _resetForm($field_columns)
     {
         $reset_form = [];
 
@@ -536,7 +568,7 @@ class CrudGenerator extends Component
         return $reset_form;
     }
 
-    public function _getFieldColumns()
+    private function _getFieldColumns()
     {
         $field_column = [];
         foreach ($this->field_column as $key => $value) {
@@ -556,14 +588,14 @@ class CrudGenerator extends Component
         return $field_column;
     }
 
-    public function delete($key, $value)
+    private function delete($key, $value)
     {
         unset($this->columns[$key]);
         unset($this->field['type'][$value]);
         unset($this->field['label'][$value]);
     }
 
-    public function _reset()
+    private function _reset()
     {
         $this->table = null;
         $this->filename = null;
@@ -577,5 +609,50 @@ class CrudGenerator extends Component
         $this->field_columns = [];
         $this->have_richtext = false;
         $this->have_multiple_input = false;
+    }
+
+    // generate_route_file
+    private function generateRouteFile($controller_name, $view_name, $folder_namespace = null)
+    {
+        $file_path = base_path('routes/web_path.php');
+        $data = file_get_contents($file_path);
+        $route_name = str_replace('.', '-', $view_name);
+        $import_file = "use App\\Http\\Livewire\\{$controller_name};";
+        if ($folder_namespace) {
+            $import_file = "use App\\Http\\Livewire\\{$folder_namespace}\\{$controller_name};";
+        }
+
+        $route_component = "Route::get('/{$view_name}', {$controller_name}::class)->name('{$route_name}');";
+        $read_file_path = str_replace($import_file, '', $data);
+        $read_file_path = str_replace($route_component, '', $read_file_path);
+        $route_export_path = $import_file . PHP_EOL;
+        $route_export_path .= "// [route_export_path]";
+        $route_file = $route_component . PHP_EOL;
+        $route_file .= "// [route_path]";
+
+        $replace_route_path = str_replace('// [route_export_path]', $route_export_path, $read_file_path);
+        $replace_file_path = str_replace('// [route_path]', $route_file, $replace_route_path);
+        file_put_contents($file_path, $replace_file_path);
+    }
+
+    public function getTableName($name)
+    {
+        $filename = str_replace('_', '-', $name);
+        $filename = str_replace('tbl-', '', $filename);
+        $filename = implode('-', array_map('ucfirst', explode('-', $filename)));
+
+        // remove last character
+        $last_character = substr($filename, -1);
+        if ($last_character == 's') {
+            $filename = substr($filename, 0, -1);
+        }
+
+        $this->columns = [];
+        $this->field = [];
+        $this->field_column = [];
+        $this->field_columns = [];
+        $this->have_richtext = false;
+        $this->have_multiple_input = false;
+        $this->filename = $filename;
     }
 }

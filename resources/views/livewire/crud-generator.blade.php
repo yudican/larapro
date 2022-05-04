@@ -18,7 +18,7 @@
                         <div class="col-md-12">
                             <div class="form-group ">
                                 <label for="table">Table</label>
-                                <select wire:model="table" class="form-control">
+                                <select wire:model="table" class="form-control" wire:change="getTableName($event.target.value)">
                                     <option value="">Select Table</option>
                                     @foreach ($tables as $item)
                                     <option value="{{$item['name']}}">{{$item['name']}}</option>
@@ -65,8 +65,7 @@
                                             <input type="text" class="form-control" value="{{$column}}">
                                         </td>
                                         <td>
-                                            <input type="text" wire:model="field.label.{{$column}}" class="form-control"
-                                                value="{{str_replace('_', '',$column)}}">
+                                            <input type="text" wire:model="field.label.{{$column}}" class="form-control" value="{{str_replace('_', '',$column)}}">
                                         </td>
                                         <td>
                                             <select wire:model="field.type.{{$column}}" class="form-control">
@@ -83,9 +82,7 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <button class="btn btn-danger btn-sm"
-                                                wire:click="delete({{$key}},'{{$column}}')"><i
-                                                    class="fas fa-times"></i></button>
+                                            <button class="btn btn-danger btn-sm" wire:click="delete({{$key}},'{{$column}}')"><i class="fas fa-times"></i></button>
                                         </td>
                                     </tr>
                                     @endforeach

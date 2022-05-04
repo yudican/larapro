@@ -30,7 +30,7 @@ class [fileName]Controller extends Component
 
     public function render()
     {
-        return view('livewire.[folderNamespaceLower].[viewName]', [
+        return view('livewire.[folderNamespaceLower][viewName]', [
             'items' => [modelName]::all()
         ]);
     }
