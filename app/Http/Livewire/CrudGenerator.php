@@ -614,7 +614,7 @@ class CrudGenerator extends Component
     // generate_route_file
     private function generateRouteFile($controller_name, $view_name, $folder_namespace = null)
     {
-        $file_path = base_path('routes/web_path.php');
+        $file_path = base_path('routes/web.php');
         $data = file_get_contents($file_path);
         $route_name = str_replace('.', '-', $view_name);
         $import_file = "use App\\Http\\Livewire\\{$controller_name};";
@@ -625,12 +625,12 @@ class CrudGenerator extends Component
         $route_component = "Route::get('/{$view_name}', {$controller_name}::class)->name('{$route_name}');";
         $read_file_path = str_replace($import_file, '', $data);
         $read_file_path = str_replace($route_component, '', $read_file_path);
-        $route_export_path = $import_file . PHP_EOL;
-        $route_export_path .= "// [route_export_path]";
+        $route_import_path = $import_file . PHP_EOL;
+        $route_import_path .= "// [route_import_path]";
         $route_file = $route_component . PHP_EOL;
         $route_file .= "// [route_path]";
 
-        $replace_route_path = str_replace('// [route_export_path]', $route_export_path, $read_file_path);
+        $replace_route_path = str_replace('// [route_import_path]', $route_import_path, $read_file_path);
         $replace_file_path = str_replace('// [route_path]', $route_file, $replace_route_path);
         file_put_contents($file_path, $replace_file_path);
     }

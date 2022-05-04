@@ -9,6 +9,7 @@ use App\Http\Livewire\UserManagement\PermissionRole;
 use App\Http\Livewire\UserManagement\Role;
 use App\Http\Livewire\UserManagement\User;
 use Illuminate\Support\Facades\Route;
+// [route_import_path]
 
 /*
 |--------------------------------------------------------------------------
@@ -42,5 +43,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'user.authorization']
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
     // Master data
+
     // [route_path]
+
 });
