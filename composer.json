@@ -9,7 +9,7 @@
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
-        "laravel/framework": "^8.40",
+        "laravel/framework": "^9.19",
         "laravel/jetstream": "^2.3",
         "laravel/sanctum": "^2.6",
         "laravel/tinker": "^2.5",
@@ -30,7 +30,7 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         },
-        "exclude-from-classmap":[
+        "exclude-from-classmap": [
             "vendor/livewire/livewire/src/Controllers/FilePreviewHandler.php",
             "vendor/livewire/livewire/src/Controllers/FileUploadHandler.php"
         ],
