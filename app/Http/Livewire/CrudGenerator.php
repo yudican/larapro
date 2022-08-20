@@ -73,6 +73,10 @@ class CrudGenerator extends Component
         $controller_name = $this->filename . 'Controller';
         $view_name = str_replace('_', '-', $this->table);
         $view_name = str_replace('tbl-', '', $view_name);
+        $last_character = substr($view_name, -1);
+        if ($last_character == 's') {
+            $view_name = substr($view_name, 0, -1);
+        }
 
         $controllerTemplate = $this->controllerTemplate($field_columns);
         $viewTemplate = $this->viewTemplate($field_columns);
@@ -429,8 +433,8 @@ class CrudGenerator extends Component
         foreach ($field_columns as $key => $value) {
             if ($no < 1) {
                 if (in_array($value['type'], ['image', 'file'])) {
-                    $column_render[] = 'use Illuminate\Support\Facades\Storage';
-                    $column_render[] = 'use Livewire\WithFileUploads;';
+                    $column_render[0] = 'use Illuminate\Support\Facades\Storage';
+                    $column_render[0] = 'use Livewire\WithFileUploads;';
                 }
             }
         }
