@@ -13,8 +13,8 @@
         "laravel/sanctum": "^2.6",
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.0",
-        "mediconesystems/livewire-datatables": "^0.9.5"
-
+        "mediconesystems/livewire-datatables": "^0.9.5",
+        "yudican/laravel-crud-generator": "^1.0"
     },
     "require-dev": {
         "spatie/laravel-ignition": "^1.0",
@@ -30,14 +30,8 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         },
-        "exclude-from-classmap": [
-            "vendor/livewire/livewire/src/Controllers/FilePreviewHandler.php",
-            "vendor/livewire/livewire/src/Controllers/FileUploadHandler.php"
-        ],
         "files": [
-            "app/helpers.php",
-            "app/overrides/livewire/FilePreviewHandler.php",
-            "app/overrides/livewire/FileUploadHandler.php"
+            "app/helpers.php"
         ]
     },
     "autoload-dev": {

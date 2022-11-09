@@ -83,6 +83,10 @@ class Menu extends Component
 
             if ($this->show_menu > 0) {
                 if ($this->menu_route != '#') {
+                    $menu_exists = Menu::where('menu_route', $this->menu_route)->exists();
+                    if ($menu_exists) {
+                        return $this->emit('showAlertError', ['msg' => 'Menu Sudah Terdaftar']);
+                    }
                     $permissionId = [];
 
                     foreach (permissionLists() as $key => $value) {
@@ -132,29 +136,18 @@ class Menu extends Component
 
             if ($this->show_menu > 0) {
                 if ($this->menu_route != '#') {
-                    $permissionId = [];
-                    foreach (permissionLists() as $key => $value) {
-                        $permission = Permission::where('permission_value', $this->menu_route . ':' . $key)->first();
-                        if ($permission) {
-                            $permissionId[] = $permission->id;
-                        } else {
-                            $permissions = Permission::create([
-                                'id' => Uuid::uuid4()->toString(),
-                                'permission_value' => $this->menu_route . ':' . $key,
-                                'permission_name' => $value . ' ' . $this->menu_label,
-                                'created_at' => Carbon::now(),
-                                'updated_at' => Carbon::now()
-                            ]);
-                            $permissionId[] = $permissions->id;
-                        }
-                        $permissions->roles()->sync($this->role_id);
+                    $menu_exists = Menu::where('id', '!=', $menu->id)->where('menu_route', $this->menu_route)->exists();
+                    if ($menu_exists) {
+                        return $this->emit('showAlertError', ['msg' => 'Menu Sudah Terdaftar']);
                     }
-                }
-            } else {
-                if ($this->menu_route != '#') {
-                    $permissionId = [];
                     foreach (permissionLists() as $key => $value) {
-                        Permission::where('permission_value', $this->menu_route . ':' . $key)->delete();
+                        $permission = Permission::updateOrcreate([
+                            'permission_value' => $menu->menu_route . ':' . $key
+                        ], [
+                            'permission_name' => $value . ' ' . $menu->menu_label,
+                            'updated_at' => Carbon::now()
+                        ]);
+                        $permission->roles()->sync($this->role_id);
                     }
                 }
             }
