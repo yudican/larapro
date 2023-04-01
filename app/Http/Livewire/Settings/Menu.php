@@ -78,12 +78,10 @@ class Menu extends Component
         try {
             DB::beginTransaction();
 
-            $menu = ModelsMenu::create($data);
-            $menu->roles()->sync($this->role_id);
 
             if ($this->show_menu > 0) {
                 if ($this->menu_route != '#') {
-                    $menu_exists = Menu::where('menu_route', $this->menu_route)->exists();
+                    $menu_exists = ModelsMenu::where('menu_route', $this->menu_route)->first();
                     if ($menu_exists) {
                         return $this->emit('showAlertError', ['msg' => 'Menu Sudah Terdaftar']);
                     }
@@ -102,6 +100,9 @@ class Menu extends Component
                     $permissions->roles()->attach($this->role_id);
                 }
             }
+
+            $menu = ModelsMenu::create($data);
+            $menu->roles()->sync($this->role_id);
 
             $this->_reset();
             DB::commit();
@@ -130,13 +131,11 @@ class Menu extends Component
             DB::beginTransaction();
 
             $menu = ModelsMenu::find($this->menus_id);
-            $menu->update($data);
 
-            $menu->roles()->sync($this->role_id);
 
             if ($this->show_menu > 0) {
                 if ($this->menu_route != '#') {
-                    $menu_exists = Menu::where('id', '!=', $menu->id)->where('menu_route', $this->menu_route)->exists();
+                    $menu_exists = ModelsMenu::where('id', '!=', $menu->id)->where('menu_route', $this->menu_route)->exists();
                     if ($menu_exists) {
                         return $this->emit('showAlertError', ['msg' => 'Menu Sudah Terdaftar']);
                     }
@@ -151,6 +150,10 @@ class Menu extends Component
                     }
                 }
             }
+
+            $menu->update($data);
+            $menu->roles()->sync($this->role_id);
+
             $this->_reset();
             DB::commit();
             return $this->emit('showAlert', ['msg' => 'Data Berhasil Diupdate']);

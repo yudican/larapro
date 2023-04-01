@@ -1,1 +1,1 @@
-<img src="{{$image_url}}" alt="" height="30">
+<img src="{{$image_url}}" alt="" style="height: 30px;">
